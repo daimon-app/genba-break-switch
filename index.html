@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>現場休憩スイッチ</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#111111">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="現場休憩スイッチ">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#050507;--surface:#09090f;--card:#0d0d16;--border:#1a1a28;--border2:#252535;
+  --gold:#b8973e;--gold2:#d4af5a;--gold3:#f0d080;
+  --text:#ede8df;--textD:#a09880;--muted:#4a4858;--green:#4a9e6a;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto Serif JP',serif;overflow-x:hidden;}
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.ambient::before{content:'';position:absolute;top:-20%;left:30%;width:60vw;height:60vw;background:radial-gradient(circle,rgba(184,151,62,0.06)0%,transparent 70%);animation:drift 12s ease-in-out infinite alternate;}
+.ambient::after{content:'';position:absolute;bottom:0;right:-10%;width:50vw;height:50vw;background:radial-gradient(circle,rgba(100,80,200,0.04)0%,transparent 70%);animation:drift 16s ease-in-out infinite alternate-reverse;}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(-5%,8%)}}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.5;}
+
+#app{width:100%;}
+.screen{
+  display:none;
+  width:100%;
+  min-height:100dvh;
+  flex-direction:column;
+  align-items:center;
+}
+.screen.active{display:flex;}
+
+/* ===== HOME ===== */
+#home{justify-content:flex-start;min-height:100dvh;padding:24px 20px;position:relative;z-index:1;align-items:center;}
+#meditation{justify-content:flex-start;min-height:100dvh;padding:80px 24px 40px;position:relative;z-index:1;}
+
+/* ===== GENBA HOME (現場休憩スイッチ：黒×白×金) ===== */
+#home.genba{background:#111111;color:#ffffff;}
+
+.genba-home-header{width:100%;max-width:400px;text-align:center;margin-top:32px;margin-bottom:28px;}
+.genba-home-title{
+  font-family:'Playfair Display',serif;font-size:24px;font-weight:700;
+  letter-spacing:5px;color:#ffffff;margin-bottom:10px;
+}
+.genba-home-sub{
+  font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;
+  color:#D4AF37;line-height:1.7;
+}
+
+.genba-home-section{width:100%;max-width:400px;margin-bottom:22px;}
+.genba-home-label{font-size:10px;letter-spacing:4px;color:#888888;text-transform:uppercase;margin-bottom:10px;text-align:center;}
+
+.genba-home-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.genba-home-grid.three{grid-template-columns:1fr 1fr 1fr;}
+
+.genba-home-btn{
+  padding:24px 8px;background:#1a1a1a;border:1px solid #333333;
+  color:#ffffff;font-family:'Noto Serif JP',serif;font-size:15px;
+  letter-spacing:1px;cursor:pointer;transition:all 0.2s;line-height:1.5;
+}
+.genba-home-btn:hover{border-color:#D4AF37;color:#D4AF37;background:rgba(212,175,55,0.06);}
+.genba-home-btn.small{padding:18px 4px;font-size:13px;}
+
+.genba-home-stats{
+  width:100%;max-width:400px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;
+  margin-bottom:22px;
+}
+.genba-stat-box{
+  text-align:center;padding:14px 6px;border:1px solid #333333;background:#1a1a1a;
+}
+.genba-stat-num{
+  display:block;font-family:'Playfair Display',serif;font-size:24px;
+  color:#D4AF37;line-height:1;margin-bottom:4px;
+}
+.genba-stat-label{display:block;font-size:9px;letter-spacing:1px;color:#888888;}
+
+.genba-home-links{width:100%;max-width:400px;display:flex;flex-direction:column;gap:8px;}
+.genba-link-btn{
+  padding:14px;background:transparent;border:1px solid #333333;
+  color:#cccccc;font-family:'Noto Serif JP',serif;font-size:12px;
+  letter-spacing:2px;cursor:pointer;transition:all 0.2s;
+}
+.genba-link-btn:hover{border-color:#D4AF37;color:#D4AF37;}
+.logo{font-family:'Playfair Display',serif;font-size:13px;letter-spacing:8px;color:var(--gold);text-transform:uppercase;opacity:0.7;margin-bottom:24px;}
+
+/* TOOL GRID — 1画面完結 */
+.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:380px;margin-bottom:16px;}
+.tool-card{
+  border:1px solid var(--border2);background:var(--card);
+  aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.25s;
+}
+.tool-card:hover{border-color:var(--gold);box-shadow:0 0 20px rgba(184,151,62,0.1);}
+.tool-num{font-family:'Playfair Display',serif;font-size:34px;color:var(--gold2);line-height:1;}
+.tool-unit{font-size:11px;letter-spacing:2px;color:var(--muted);margin-top:6px;}
+.tool-card.cut .tool-num{color:#c0696f;}
+.tool-card.cut:hover{border-color:#c0696f;box-shadow:0 0 20px rgba(192,105,111,0.15);}
+.tool-card.sleep{background:radial-gradient(ellipse at 50% 30%,rgba(100,80,200,0.08),var(--card) 70%);}
+.tool-card.sleep .tool-icon{font-size:26px;color:#a8a0e8;}
+.tool-card.sleep .tool-unit{color:#a8a0e8;font-size:10px;}
+.tool-card.sleep:hover{border-color:#6a5fc0;box-shadow:0 0 20px rgba(106,95,192,0.15);}
+.tool-card.break{background:radial-gradient(ellipse at 50% 30%,rgba(255,255,255,0.05),var(--card) 70%);}
+.tool-card.break .tool-icon{font-size:26px;color:#e8e8e8;}
+.tool-card.break .tool-unit{color:#e8e8e8;font-size:11px;letter-spacing:2px;}
+.tool-card.break:hover{border-color:#cfcfcf;box-shadow:0 0 20px rgba(255,255,255,0.1);}
+
+/* HOME PHILOSOPHY */
+.home-philosophy{
+  width:100%;max-width:380px;
+  text-align:center;
+  margin:20px 0 16px;
+}
+.hp-line{
+  font-family:'Cormorant Garamond',serif;
+  font-size:14px;font-style:italic;font-weight:300;
+  color:var(--textD);
+  margin-bottom:14px;
+  letter-spacing:1px;
+}
+.hp-grid{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:6px 14px;
+  font-size:10px;
+  letter-spacing:0.5px;
+  color:var(--muted);
+  font-family:'Noto Serif JP',serif;
+}
+
+/* SOUND TYPE SELECTOR */
+.sound-type-row{display:flex;gap:5px;width:100%;max-width:380px;margin-bottom:10px;}
+.sound-type-btn{
+  flex:1;padding:10px 2px;background:transparent;
+  border:1px solid var(--border2);color:var(--muted);
+  font-family:'Noto Serif JP',serif;font-size:10px;letter-spacing:0.5px;
+  cursor:pointer;transition:all 0.25s;
+}
+.sound-type-btn.on{border-color:var(--gold);color:var(--gold2);background:rgba(184,151,62,0.06);}
+.sound-type-btn:hover{border-color:var(--gold2);}
+
+/* HOME LINKS */
+.home-links{display:flex;gap:10px;width:100%;max-width:380px;}
+.info-link{
+  flex:1;padding:14px;background:transparent;
+  border:1px solid var(--border2);color:var(--muted);
+  font-family:'Noto Serif JP',serif;font-size:11px;letter-spacing:3px;
+  cursor:pointer;transition:all 0.25s;
+}
+.info-link:hover{border-color:var(--gold);color:var(--gold2);}
+
+/* HISTORY */
+.history-wrap{width:100%;max-width:380px;}
+.history-item{
+  display:flex;align-items:center;justify-content:space-between;
+  border:1px solid var(--border);background:var(--card);
+  padding:14px 16px;margin-bottom:6px;
+}
+.h-left{display:flex;align-items:center;gap:12px;}
+.h-icon{font-size:16px;color:var(--gold);}
+.h-info{display:flex;flex-direction:column;}
+.h-mode{font-size:13px;color:var(--text);letter-spacing:0.5px;}
+.h-date{font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:2px;}
+.h-dur{font-family:'Playfair Display',serif;font-size:16px;color:var(--gold2);}
+.h-del{
+  margin-left:14px;color:var(--muted);font-size:16px;
+  padding:4px 6px;cursor:pointer;transition:color 0.2s;flex-shrink:0;
+}
+.h-del:hover{color:#c0696f;}
+.history-empty{
+  text-align:center;padding:32px 16px;
+  color:var(--muted);font-size:12px;letter-spacing:2px;
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  border:1px dashed var(--border2);
+}
+
+/* INFO PAGE */
+#info{
+  padding:80px 24px 60px;
+  position:relative;z-index:1;
+  justify-content:flex-start;
+}
+#history{
+  padding:80px 24px 24px;
+  position:relative;z-index:1;
+  justify-content:flex-start;
+}
+#history .info-wrap{
+  margin-top:0;
+  padding-top:0;
+}
+#history .info-title{
+  margin-top:0 !important;
+}
+.info-wrap{width:100%;max-width:400px;}
+.info-title{font-family:'Playfair Display',serif;font-size:22px;letter-spacing:4px;color:var(--gold2);text-align:center;margin-bottom:6px;}
+.info-sub{font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:var(--muted);text-align:center;margin-bottom:32px;}
+.info-item{border:1px solid var(--border2);background:var(--card);padding:18px 20px;margin-bottom:8px;}
+.info-head{display:flex;align-items:baseline;gap:12px;margin-bottom:8px;}
+.info-time{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold2);}
+.info-name{font-size:13px;letter-spacing:2px;color:var(--text);}
+.info-desc{font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:var(--textD);line-height:1.7;}
+
+/* ===== SESSION SCREEN ===== */
+#session{
+  position:fixed;inset:0;
+  flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;z-index:1;
+}
+#session.active{display:flex;}
+
+/* 戻るボタン（上部固定） */
+.session-back{
+  position:fixed;top:0;left:0;right:0;
+  display:flex;align-items:center;gap:10px;
+  padding:18px 20px;
+  background:rgba(5,5,7,0.9);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  font-size:12px;letter-spacing:3px;color:var(--textD);
+  cursor:pointer;z-index:300;transition:color 0.2s;
+}
+.session-back:hover{color:var(--gold2);}
+.session-back .arrow{font-size:16px;color:var(--gold);}
+
+.session-mode-name{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--gold2);margin-bottom:32px;text-shadow:0 0 30px rgba(184,151,62,0.3);text-align:center;}
+
+.session-one-line{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--text);margin-top:28px;margin-bottom:8px;text-align:center;}
+
+.timer-ring-wrap{position:relative;width:240px;height:240px;margin-bottom:8px;}
+.timer-ring-wrap svg{transform:rotate(-90deg);width:100%;height:100%;}
+.t-bg{stroke:var(--border2);}
+.t-fill{stroke:var(--gold2);stroke-linecap:round;transition:stroke-dashoffset 1s linear;filter:drop-shadow(0 0 10px rgba(212,175,90,0.4));}
+.timer-display{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.timer-time{font-family:'Playfair Display',serif;font-size:60px;color:var(--gold3);letter-spacing:2px;text-shadow:0 0 20px rgba(240,208,128,0.25);}
+.timer-state{font-size:10px;letter-spacing:4px;color:var(--gold2);text-transform:uppercase;margin-top:8px;}
+
+.session-actions{display:flex;gap:12px;width:100%;max-width:320px;}
+.s-btn{
+  flex:1;padding:16px;background:transparent;border:1px solid var(--border2);
+  color:var(--textD);font-family:'Noto Serif JP',serif;font-size:12px;letter-spacing:3px;
+  cursor:pointer;transition:all 0.25s;
+}
+.s-btn:hover{border-color:var(--gold);color:var(--gold2);}
+.s-btn.gold{border-color:var(--gold);color:var(--gold2);background:rgba(184,151,62,0.06);}
+.s-btn.gold:hover{background:rgba(184,151,62,0.12);box-shadow:0 0 20px rgba(184,151,62,0.15);}
+
+.sound-toggle{
+  margin-top:24px;display:flex;align-items:center;gap:10px;
+  font-size:11px;letter-spacing:2px;color:var(--muted);cursor:pointer;
+  border:1px solid var(--border);padding:10px 20px;transition:all 0.25s;
+}
+.sound-toggle.on{border-color:var(--gold);color:var(--gold2);}
+.sound-toggle:hover{border-color:var(--gold2);}
+
+.session-note{
+  margin-top:14px;font-size:10px;letter-spacing:1px;
+  color:var(--muted);text-align:center;max-width:280px;
+  line-height:1.6;
+}
+.session-note.warn{color:#c0696f;}
+.screen.genba .session-note{color:#888888;}
+.screen.genba .session-note.warn{color:#c0696f;}
+
+/* ===== COMPLETE SCREEN ===== */
+#complete{justify-content:center;padding:40px 24px;text-align:center;position:relative;z-index:1;}
+.complete-mark{font-size:14px;letter-spacing:8px;color:var(--gold);margin-bottom:32px;}
+.complete-msg{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;font-weight:300;line-height:1.8;color:var(--text);max-width:340px;margin-bottom:48px;min-height:80px;display:flex;align-items:center;justify-content:center;}
+.complete-msg.loading{font-family:'Noto Serif JP',serif;font-style:normal;font-size:12px;color:var(--muted);letter-spacing:2px;display:flex;align-items:center;gap:10px;}
+.dots span{display:inline-block;width:5px;height:5px;background:var(--gold);border-radius:50%;animation:dot 1.4s infinite;}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,80%,100%{transform:scale(0.5);opacity:0.2}40%{transform:scale(1);opacity:1}}
+
+/* ===== SLEEP SCREEN ===== */
+#sleep{
+  justify-content:flex-start;
+  padding:120px 24px 60px;
+  position:relative;z-index:1;
+  background:radial-gradient(ellipse at 50% 0%,rgba(100,80,200,0.06)0%,transparent 60%);
+}
+.sleep-deco{font-size:11px;letter-spacing:6px;color:#8880c0;text-transform:uppercase;margin-bottom:16px;opacity:0.7;text-align:center;}
+.sleep-msg{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--textD);margin-bottom:48px;text-align:center;}
+.sleep-elapsed{font-family:'Playfair Display',serif;font-size:48px;color:var(--gold3);letter-spacing:2px;margin-bottom:4px;text-shadow:0 0 20px rgba(240,208,128,0.2);}
+.sleep-remaining{font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:36px;min-height:14px;}
+
+/* ===== GENBA THEME (休憩モード：黒×白、屋外視認性重視) ===== */
+.screen.genba{
+  background:#111111;
+  color:#ffffff;
+}
+.screen.genba .session-back.genba-back{
+  background:rgba(17,17,17,0.92);
+  color:#cccccc;
+  border-bottom:1px solid #2a2a2a;
+}
+.screen.genba .session-back.genba-back .arrow{color:#D4AF37;}
+.screen.genba .session-back.genba-back:hover{color:#D4AF37;}
+
+#breakSetup{justify-content:flex-start;padding:100px 24px 60px;align-items:center;}
+#genbaModeSelect{justify-content:flex-start;padding:100px 24px 60px;align-items:center;}
+.genba-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;letter-spacing:4px;color:#ffffff;margin-bottom:8px;text-align:center;}
+.genba-sub{font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:#aaaaaa;margin-bottom:32px;text-align:center;}
+
+.genba-input-wrap{width:100%;max-width:360px;margin-bottom:36px;}
+.genba-input{
+  width:100%;padding:16px;background:#1a1a1a;
+  border:1px solid #333333;color:#ffffff;
+  font-family:'Noto Serif JP',serif;font-size:15px;
+  margin-bottom:12px;
+}
+.genba-input:focus{outline:none;border-color:#D4AF37;}
+.genba-input::placeholder{color:#666666;}
+.genba-presets{display:flex;flex-wrap:wrap;gap:8px;}
+.genba-preset-btn{
+  padding:10px 14px;background:transparent;border:1px solid #333333;
+  color:#cccccc;font-family:'Noto Serif JP',serif;font-size:12px;
+  letter-spacing:1px;cursor:pointer;transition:all 0.2s;
+}
+.genba-preset-btn:hover{border-color:#D4AF37;color:#D4AF37;}
+
+.genba-time-label{font-size:10px;letter-spacing:4px;color:#888888;text-transform:uppercase;margin-bottom:12px;}
+.genba-time-row{display:flex;gap:10px;width:100%;max-width:360px;}
+.genba-time-btn{
+  flex:1;padding:18px 8px;background:#1a1a1a;border:1px solid #333333;
+  color:#ffffff;font-family:'Playfair Display',serif;font-size:18px;
+  cursor:pointer;transition:all 0.2s;
+}
+.genba-time-btn:hover{border-color:#D4AF37;color:#D4AF37;background:rgba(212,175,55,0.06);}
+
+/* BREAK SESSION */
+#breakSession{padding:24px;}
+.genba-mode-name{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#ffffff;margin-bottom:28px;text-align:center;letter-spacing:4px;}
+.genba-ring .genba-ring-bg{stroke:#333333;}
+.genba-ring .genba-ring-fill{stroke:#D4AF37;filter:drop-shadow(0 0 8px rgba(212,175,55,0.4));}
+.genba-time{color:#ffffff;text-shadow:none;}
+.genba-state{color:#D4AF37;}
+.genba-calm-list{
+  display:flex;flex-direction:column;gap:10px;align-items:center;
+  margin-top:8px;font-family:'Cormorant Garamond',serif;font-size:18px;
+  font-style:italic;color:#cccccc;
+}
+.genba-btn{border-color:#333333;color:#cccccc;}
+.genba-btn:hover{border-color:#D4AF37;color:#D4AF37;}
+.genba-btn.gold{border-color:#D4AF37;color:#D4AF37;background:rgba(212,175,55,0.06);}
+.genba-btn.gold:hover{background:rgba(212,175,55,0.14);}
+
+/* BREAK DONE */
+#breakDone{justify-content:center;padding:40px 24px;text-align:center;}
+.genba-done-mark{font-size:20px;color:#888888;margin-bottom:14px;}
+.genba-done-label{font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;letter-spacing:3px;color:#aaaaaa;margin-bottom:32px;}
+.genba-done-sub{font-size:12px;letter-spacing:4px;color:#888888;text-transform:uppercase;margin-bottom:14px;}
+.genba-next-action{
+  font-family:'Playfair Display',serif;font-size:30px;font-weight:700;
+  color:#D4AF37;max-width:340px;line-height:1.6;
+  border:1px solid #D4AF37;padding:28px 24px;background:#1a1a1a;
+  text-shadow:0 0 20px rgba(212,175,55,0.25);
+  box-shadow:0 0 30px rgba(212,175,55,0.1);
+}
+
+/* BREAK WARNING (休憩終了30秒前: 全画面演出) */
+#breakWarning{
+  justify-content:center;align-items:center;text-align:center;
+  background:#000000;
+  animation: genbaWarningFade 0.6s ease;
+}
+@keyframes genbaWarningFade{from{opacity:0}to{opacity:1}}
+.genba-warning-wrap{display:flex;flex-direction:column;align-items:center;padding:24px;}
+.genba-warning-label{
+  font-family:'Noto Serif JP',serif;font-size:13px;font-weight:400;
+  letter-spacing:6px;color:#888888;margin-bottom:6px;
+  text-transform:uppercase;
+}
+.genba-warning-sub{
+  font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;
+  color:#888888;margin-bottom:4px;
+}
+.genba-warning-action{
+  margin-top:36px;font-family:'Playfair Display',serif;font-size:32px;font-weight:700;
+  font-style:normal;color:#D4AF37;border:1px solid #D4AF37;
+  padding:28px 24px;background:#1a1a1a;max-width:340px;line-height:1.6;
+  text-shadow:0 0 20px rgba(212,175,55,0.25);
+  box-shadow:0 0 30px rgba(212,175,55,0.1);
+}
+
+/* SLEEP SELECT */
+#sleepSelect{justify-content:flex-start;padding:120px 24px 60px;position:relative;z-index:1;}
+.sleep-select-list{width:100%;max-width:340px;display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+.sleep-select-btn{
+  padding:18px;background:var(--card);border:1px solid var(--border2);
+  color:var(--text);font-family:'Noto Serif JP',serif;font-size:14px;letter-spacing:2px;
+  cursor:pointer;transition:all 0.25s;
+}
+.sleep-select-btn:hover{border-color:#6a5fc0;color:#a8a0e8;box-shadow:0 0 20px rgba(106,95,192,0.1);}
+
+/* BOTTOM PAD */
+.bottom-pad{height:40px;}
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+<div id="app">
+
+<!-- ===== HOME (現場休憩スイッチ) ===== -->
+<div id="home" class="screen active genba">
+  <div class="genba-home-header">
+    <div class="genba-home-title">現場休憩スイッチ</div>
+    <div class="genba-home-sub">疲れる前に戻す。<br>次の一手へ。</div>
+  </div>
+
+  <div class="genba-home-section">
+    <div class="genba-home-grid">
+      <button class="genba-home-btn" onclick="openGenbaMode('normal')">通常モード</button>
+      <button class="genba-home-btn" onclick="openGenbaMode('hot')">暑い日モード</button>
+      <button class="genba-home-btn" onclick="openGenbaMode('heavy')">重作業モード</button>
+      <button class="genba-home-btn" onclick="openGenbaMode('lunch')">昼休憩</button>
+    </div>
+  </div>
+
+  <div class="genba-home-section">
+    <div class="genba-home-label">マイクロ休憩</div>
+    <div class="genba-home-grid three">
+      <button class="genba-home-btn small" onclick="openMicroSetup(1)">1分<br>リセット</button>
+      <button class="genba-home-btn small" onclick="openMicroSetup(3)">3分<br>リセット</button>
+      <button class="genba-home-btn small" onclick="openMicroSetup(5)">5分<br>リセット</button>
+    </div>
+  </div>
+
+  <div class="genba-home-stats" id="genbaHomeStats"></div>
+
+  <div class="genba-home-links">
+    <button class="genba-link-btn" onclick="openBreakSetup()">自由休憩</button>
+    <button class="genba-link-btn" onclick="renderHistory();showScreen('history')">記録</button>
+    <button class="genba-link-btn" onclick="showScreen('meditation')">瞑想・整えタイマー</button>
+  </div>
+</div>
+
+<!-- ===== MEDITATION (瞑想・整えタイマー) ===== -->
+<div id="meditation" class="screen">
+  <div class="session-back" onclick="goHome()">
+    <span class="arrow">←</span> 戻る
+  </div>
+  <div class="logo" style="margin-top:60px;">DAIMON</div>
+
+  <div class="tool-grid">
+    <div class="tool-card cut" onclick="startSession(30,'secs','断ち切り')">
+      <div class="tool-num">30</div><div class="tool-unit">秒</div>
+    </div>
+    <div class="tool-card" onclick="startSession(1,'min','一息リセット')">
+      <div class="tool-num">1</div><div class="tool-unit">分</div>
+    </div>
+    <div class="tool-card" onclick="startSession(3,'min','現場呼吸')">
+      <div class="tool-num">3</div><div class="tool-unit">分</div>
+    </div>
+    <div class="tool-card" onclick="startSession(5,'min','集中戻し')">
+      <div class="tool-num">5</div><div class="tool-unit">分</div>
+    </div>
+    <div class="tool-card" onclick="startSession(10,'min','精度回復')">
+      <div class="tool-num">10</div><div class="tool-unit">分</div>
+    </div>
+    <div class="tool-card" onclick="startSession(20,'min','深い整え')">
+      <div class="tool-num">20</div><div class="tool-unit">分</div>
+    </div>
+    <div class="tool-card" onclick="startSession(25,'min','ストレス耐性')">
+      <div class="tool-num">25</div><div class="tool-unit">分</div>
+    </div>
+    <div class="tool-card sleep" onclick="showScreen('sleepSelect')">
+      <div class="tool-icon">◐</div><div class="tool-unit">眠れない時</div>
+    </div>
+    <div class="tool-card break" onclick="openBreakSetup()">
+      <div class="tool-icon">↺</div><div class="tool-unit">休憩</div>
+    </div>
+  </div>
+
+  <div class="home-philosophy">
+    <div class="hp-line">休むためではなく、戻るために使う。</div>
+    <div class="hp-grid">
+      <span>30秒：断ち切り</span>
+      <span>1分：一息</span>
+      <span>3分：呼吸</span>
+      <span>5分：集中</span>
+      <span>10分：精度</span>
+      <span>20分：回復</span>
+      <span>25分：耐性</span>
+    </div>
+  </div>
+
+  <div class="sound-type-row">
+    <button class="sound-type-btn" data-sound="ocean" onclick="setSoundType('ocean')">波打ち際</button>
+    <button class="sound-type-btn" data-sound="river" onclick="setSoundType('river')">川</button>
+    <button class="sound-type-btn" data-sound="forest" onclick="setSoundType('forest')">森</button>
+    <button class="sound-type-btn" data-sound="rain" onclick="setSoundType('rain')">雨</button>
+    <button class="sound-type-btn on" data-sound="silent" onclick="setSoundType('silent')">無音</button>
+  </div>
+
+  <div class="sound-toggle count-sound-toggle on" onclick="toggleCountSound()" style="margin-top:0;margin-bottom:14px;">
+    🔔 &nbsp;カウント音 — ON
+  </div>
+
+  <div class="home-links">
+    <button class="info-link" onclick="renderHistory();showScreen('history')">記録</button>
+    <button class="info-link" onclick="showScreen('info')">時間別効果</button>
+  </div>
+</div>
+
+<!-- ===== HISTORY (記録) ===== -->
+<div id="history" class="screen">
+  <div class="session-back" onclick="goHome()">
+    <span class="arrow">←</span> 戻る
+  </div>
+  <div class="info-wrap">
+    <div class="info-title">記録</div>
+    <div class="info-sub">積み上げてきたもの</div>
+    <div class="history-wrap" id="historyWrap"></div>
+  </div>
+  <div class="bottom-pad"></div>
+</div>
+
+<!-- ===== INFO (時間別効果) ===== -->
+<div id="info" class="screen">
+  <div class="session-back" onclick="goMeditation()">
+    <span class="arrow">←</span> 戻る
+  </div>
+
+  <div class="info-wrap">
+    <div class="info-title">時間別効果</div>
+    <div class="info-sub">それぞれの時間に、意味がある</div>
+
+    <div class="info-item">
+      <div class="info-head"><span class="info-time">30秒</span><span class="info-name">断ち切り</span></div>
+      <div class="info-desc">今のミスや感情を、そこで止める。引きずらず次へ移るための一手。</div>
+    </div>
+    <div class="info-item">
+      <div class="info-head"><span class="info-time">1分</span><span class="info-name">一息リセット</span></div>
+      <div class="info-desc">肩の力を抜き、呼吸を整える。小さな切り替えに使う。</div>
+    </div>
+    <div class="info-item">
+      <div class="info-head"><span class="info-time">3分</span><span class="info-name">現場呼吸</span></div>
+      <div class="info-desc">作業の合間、現場に戻るための呼吸。焦りを置いていく。</div>
+    </div>
+    <div class="info-item">
+      <div class="info-head"><span class="info-time">5分</span><span class="info-name">集中戻し</span></div>
+      <div class="info-desc">散った集中を戻す。雑念が出ても、また戻ればいい。</div>
+    </div>
+    <div class="info-item">
+      <div class="info-head"><span class="info-time">10分</span><span class="info-name">精度回復</span></div>
+      <div class="info-desc">焦りや力みを抜き、静かな状態に戻す。判断の精度を取り戻す。</div>
+    </div>
+    <div class="info-item">
+      <div class="info-head"><span class="info-time">20分</span><span class="info-name">深い整え</span></div>
+      <div class="info-desc">長く座り、思考を追わない時間。深いリセットに使う。</div>
+    </div>
+    <div class="info-item">
+      <div class="info-head"><span class="info-time">25分</span><span class="info-name">ストレス耐性</span></div>
+      <div class="info-desc">不快さから逃げずにいる時間。耐えたことが、そのまま証拠になる。</div>
+    </div>
+    <div class="info-item">
+      <div class="info-head"><span class="info-time">∞</span><span class="info-name">眠れない時</span></div>
+      <div class="info-desc">タイマーなし。自然音だけで横になる。終わりを決めず、終わったら終了を押す。</div>
+    </div>
+  </div>
+
+  <div class="bottom-pad"></div>
+</div>
+
+<!-- ===== SESSION ===== -->
+<div id="session" class="screen">
+  <div class="session-back" onclick="cancelSession()">
+    <span class="arrow">←</span> 戻る
+  </div>
+
+  <div class="session-mode-name" id="sessionModeName">—</div>
+
+  <div class="timer-ring-wrap">
+    <svg viewBox="0 0 240 240">
+      <circle class="t-bg" cx="120" cy="120" r="108" fill="none" stroke-width="4"/>
+      <circle class="t-fill" id="tFill" cx="120" cy="120" r="108" fill="none" stroke-width="4" stroke-dasharray="679" stroke-dashoffset="0"/>
+    </svg>
+    <div class="timer-display">
+      <div class="timer-time" id="timerTime">00:00</div>
+      <div class="timer-state" id="timerState">進行中</div>
+    </div>
+  </div>
+
+  <div class="session-one-line" id="sessionOneLine">—</div>
+
+  <div class="sound-toggle" id="soundToggle" onclick="toggleSound()" style="margin-top:20px;">
+    ♪ &nbsp;自然音 — OFF
+  </div>
+
+  <div class="session-actions" style="margin-top:28px;">
+    <button class="s-btn" id="pauseBtn" onclick="togglePause()">一旦止める</button>
+    <button class="s-btn gold" onclick="cancelSession()">終了</button>
+  </div>
+</div>
+
+<!-- ===== COMPLETE ===== -->
+<div id="complete" class="screen">
+  <div class="complete-mark">✦ ✦ ✦</div>
+  <div class="complete-msg" id="completeMsg">整った。</div>
+  <div class="session-actions" style="max-width:320px;">
+    <button class="s-btn gold" onclick="goMeditation()" style="flex:1">ホームへ戻る</button>
+  </div>
+</div>
+
+<!-- ===== SLEEP ===== -->
+<!-- ===== SLEEP SELECT (終了時間選択) ===== -->
+<div id="sleepSelect" class="screen">
+  <div class="session-back" onclick="goMeditation()">
+    <span class="arrow">←</span> 戻る
+  </div>
+  <div class="sleep-deco">SLEEP MODE</div>
+  <div class="sleep-msg">終了時間を選んでください</div>
+  <div class="sleep-select-list">
+    <button class="sleep-select-btn" onclick="startSleep(30)">30分後に停止</button>
+    <button class="sleep-select-btn" onclick="startSleep(60)">60分後に停止</button>
+    <button class="sleep-select-btn" onclick="startSleep(90)">90分後に停止</button>
+    <button class="sleep-select-btn" onclick="startSleep(480)">朝まで流す</button>
+    <button class="sleep-select-btn" onclick="startSleep(0)">手動停止</button>
+  </div>
+</div>
+
+<div id="sleep" class="screen">
+  <div class="sleep-deco">SLEEP MODE</div>
+  <div class="sleep-msg">そのまま、横になっていい。<br>音だけが続く。</div>
+  <div class="sleep-elapsed" id="sleepElapsed">00:00</div>
+  <div class="sleep-remaining" id="sleepRemaining"></div>
+  <div class="sound-toggle on" id="sleepSoundToggle" onclick="toggleSleepSound()">
+    ♪ &nbsp;自然音 — ON
+  </div>
+  <div class="session-actions" style="margin-top:32px;max-width:320px;">
+    <button class="s-btn" onclick="endSleep()" style="flex:1">終了</button>
+  </div>
+</div>
+
+<!-- ===== BREAK SETUP (休憩前: 次の一手を入力) ===== -->
+<!-- ===== GENBA MODE SELECT (通常/暑い日/重作業/昼休憩の時間選択) ===== -->
+<div id="genbaModeSelect" class="screen genba">
+  <div class="session-back genba-back" onclick="goHome()">
+    <span class="arrow">←</span> 戻る
+  </div>
+
+  <div class="genba-title" id="genbaModeTitle">モード</div>
+  <div class="genba-sub" id="genbaModeNote"></div>
+
+  <div class="genba-input-wrap">
+    <div class="genba-time-label" style="margin-bottom:10px;">休憩後、最初にやること</div>
+    <input type="text" id="genbaNextActionInput" class="genba-input" placeholder="例：ボードを1枚貼る（未入力なら「次の一手だけ見る」）" maxlength="40">
+    <div class="genba-presets">
+      <button class="genba-preset-btn" onclick="setGenbaNextAction('間柱を入れる')">間柱を入れる</button>
+      <button class="genba-preset-btn" onclick="setGenbaNextAction('ボードを1枚貼る')">ボードを1枚貼る</button>
+      <button class="genba-preset-btn" onclick="setGenbaNextAction('墨出しをする')">墨出しをする</button>
+      <button class="genba-preset-btn" onclick="setGenbaNextAction('次の一手だけ見る')">次の一手だけ見る</button>
+    </div>
+  </div>
+
+  <div class="genba-time-label" id="genbaModeOptionsLabel">作業 → 休憩 を選ぶ</div>
+  <div class="genba-time-row" id="genbaModeOptions" style="flex-direction:column;gap:10px;"></div>
+</div>
+
+<div id="breakSetup" class="screen genba">
+  <div class="session-back genba-back" onclick="goHome()">
+    <span class="arrow">←</span> 戻る
+  </div>
+
+  <div class="genba-title">休憩</div>
+  <div class="genba-sub">休憩後、最初にやることを決めておく</div>
+
+  <div class="genba-input-wrap">
+    <input type="text" id="nextActionInput" class="genba-input" placeholder="例：ボードを1枚貼る" maxlength="40">
+    <div class="genba-presets">
+      <button class="genba-preset-btn" onclick="setNextAction('間柱を入れる')">間柱を入れる</button>
+      <button class="genba-preset-btn" onclick="setNextAction('ボードを1枚貼る')">ボードを1枚貼る</button>
+      <button class="genba-preset-btn" onclick="setNextAction('墨出しをする')">墨出しをする</button>
+      <button class="genba-preset-btn" onclick="setNextAction('次の一手だけ見る')">次の一手だけ見る</button>
+    </div>
+  </div>
+
+  <div class="genba-time-label">休憩時間</div>
+  <div class="genba-time-row">
+    <button class="genba-time-btn" onclick="startBreak(5)">5分</button>
+    <button class="genba-time-btn" onclick="startBreak(10)">10分</button>
+    <button class="genba-time-btn" onclick="startBreak(15)">15分</button>
+    <button class="genba-time-btn" onclick="startBreak(20)">20分</button>
+  </div>
+</div>
+
+<!-- ===== BREAK SESSION (休憩中) ===== -->
+<div id="breakSession" class="screen genba">
+  <div class="session-back genba-back" onclick="cancelBreak()">
+    <span class="arrow">←</span> 戻る
+  </div>
+
+  <div class="genba-mode-name" id="breakModeName">休憩中</div>
+
+  <div class="timer-ring-wrap genba-ring">
+    <svg viewBox="0 0 240 240">
+      <circle class="t-bg genba-ring-bg" cx="120" cy="120" r="108" fill="none" stroke-width="4"/>
+      <circle class="t-fill genba-ring-fill" id="breakRingFill" cx="120" cy="120" r="108" fill="none" stroke-width="4" stroke-dasharray="679" stroke-dashoffset="0"/>
+    </svg>
+    <div class="timer-display">
+      <div class="timer-time genba-time" id="breakTimerTime">00:00</div>
+      <div class="timer-state genba-state" id="breakTimerState">整える</div>
+    </div>
+  </div>
+
+  <div class="genba-calm-list" id="breakChecklist"></div>
+
+  <div class="session-note warn wake-lock-note" style="display:none;">
+    この端末は画面消灯防止に対応していません。スマホ標準アラームを併用してください。
+  </div>
+
+  <div class="session-actions" style="margin-top:28px;">
+    <button class="s-btn genba-btn" id="breakPauseBtn" onclick="toggleBreakPause()">一旦止める</button>
+    <button class="s-btn genba-btn gold" onclick="cancelBreak()">終了</button>
+  </div>
+</div>
+
+<!-- ===== BREAK WARNING (休憩終了30秒前：全画面) ===== -->
+<div id="breakWarning" class="screen genba">
+  <div class="genba-warning-wrap">
+    <div class="genba-warning-label">次の一手だけ見る</div>
+    <div class="genba-warning-sub">全部考えなくていい</div>
+    <div class="genba-warning-sub">戻る場所は一つでいい</div>
+    <div class="genba-warning-action" id="breakWarningAction">—</div>
+  </div>
+</div>
+
+<!-- ===== BREAK DONE (休憩終了→次の一手) ===== -->
+<div id="breakDone" class="screen genba">
+  <div class="genba-done-mark">✦</div>
+  <div class="genba-done-label" id="breakDoneLabel">休憩完了</div>
+  <div class="genba-done-sub">まず</div>
+  <div class="genba-next-action" id="breakNextActionDisplay">—</div>
+
+  <div class="session-actions" style="margin-top:40px;max-width:320px;">
+    <button class="s-btn genba-btn gold" style="flex:1" onclick="goHome()">現場に戻る</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ===== STATE =====
+let currentTimer = null;
+let totalSeconds = 0;
+let remainingSeconds = 0;
+let isPaused = false;
+let wakeLock = null;
+let wakeLockUnsupported = false;
+let soundOn = false;
+const COUNT_SOUND_KEY = 'daimon_count_sound';
+let countSoundOn = localStorage.getItem(COUNT_SOUND_KEY) !== '0'; // 初期値ON
+let currentModeLabel = '';
+let currentModeUnit = '';
+let currentModeValue = 0;
+let audioCtx = null;
+let noiseNode = null;
+let bigWaveTimer = null;
+
+// Sleep mode
+let sleepInterval = null;
+let sleepSeconds = 0;
+let sleepSoundOn = true;
+
+const RING_CIRC = 2 * Math.PI * 108; // ≈679
+
+// ===== MODE CONTENT (一言だけ) =====
+const MODE_CONTENT = {
+  '断ち切り':     '次の一手だけ見る',
+  '一息リセット': '肩の力を抜く',
+  '現場呼吸':     '戻ったら、動き出す',
+  '集中戻し':     '崩れても、戻れる',
+  '精度回復':     '静かになるまで',
+  '深い整え':     'ただ、座っている',
+  'ストレス耐性': '逃げずに、ここにいる',
+};
+
+
+// ===== HISTORY (localStorage) =====
+const HISTORY_KEY = 'daimon_meditation_history';
+
+function loadHistory() {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    const history = raw ? JSON.parse(raw) : [];
+
+    let changed = false;
+    const fixed = history.map((item, index) => {
+      if (!item.id) {
+        changed = true;
+        return { ...item, id: 'legacy-' + index + '-' + (item.date || '') + '-' + (item.label || '') };
+      }
+      return item;
+    });
+
+    if (changed) localStorage.setItem(HISTORY_KEY, JSON.stringify(fixed));
+
+    return fixed;
+  } catch { return []; }
+}
+
+function saveHistoryEntry(entry) {
+  const history = loadHistory();
+  entry.id = Date.now() + '-' + Math.random().toString(36).slice(2,7);
+  entry.ts = Date.now(); // 統計集計用タイムスタンプ
+  history.unshift(entry); // 新しいものを先頭に
+  if (history.length > 50) history.length = 50; // 最大50件
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+function deleteHistoryEntry(id) {
+  if (!id) return;
+  const history = loadHistory().filter(item => item.id !== id);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  renderHistory();
+}
+
+function clearAllHistory() {
+  if (!confirm('記録をすべて削除しますか？')) return;
+  localStorage.setItem(HISTORY_KEY, JSON.stringify([]));
+  renderHistory();
+}
+
+// ===== 現場休憩スイッチ：統計表示（今日/今週/今月） =====
+// ポイント化・ランキング・連続記録は意図的に実装しない（仕様方針）
+function renderGenbaStats() {
+  const wrap = document.getElementById('genbaHomeStats');
+  if (!wrap) return;
+  wrap.textContent = '';
+
+  const history = loadHistory().filter(item => typeof item.ts === 'number');
+  const now = new Date();
+
+  // 今日の開始
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+  // 今週の開始（月曜始まり）
+  const dow = now.getDay(); // 0=日
+  const diffToMonday = (dow === 0 ? 6 : dow - 1);
+  const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diffToMonday).getTime();
+
+  // 今月の開始
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+
+  let todayCount = 0;
+  let weekMinutes = 0;
+  let monthMinutes = 0;
+
+  history.forEach(item => {
+    const mins = parseInt(item.duration, 10) || 0;
+    if (item.ts >= todayStart) todayCount++;
+    if (item.ts >= weekStart) weekMinutes += mins;
+    if (item.ts >= monthStart) monthMinutes += mins;
+  });
+
+  const monthHours = Math.round(monthMinutes / 60 * 10) / 10; // 小数1桁
+
+  const stats = [
+    { num: `${todayCount}`, label: '今日 戻った回数' },
+    { num: `${weekMinutes}`, label: '今週 整えた分' },
+    { num: `${monthHours}`, label: '今月 休めた時間(h)' },
+  ];
+
+  stats.forEach(s => {
+    const box = document.createElement('div');
+    box.className = 'genba-stat-box';
+    const num = document.createElement('span');
+    num.className = 'genba-stat-num';
+    num.textContent = s.num;
+    const lbl = document.createElement('span');
+    lbl.className = 'genba-stat-label';
+    lbl.textContent = s.label;
+    box.appendChild(num);
+    box.appendChild(lbl);
+    wrap.appendChild(box);
+  });
+}
+
+function renderHistory() {
+  const wrap = document.getElementById('historyWrap');
+  const history = loadHistory();
+  wrap.textContent = '';
+
+  if (history.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'history-empty';
+    empty.textContent = 'まだ記録がない。最初の一手を。';
+    wrap.appendChild(empty);
+    return;
+  }
+
+  history.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'history-item';
+
+    const left = document.createElement('div');
+    left.className = 'h-left';
+
+    const icon = document.createElement('div');
+    icon.className = 'h-icon';
+    icon.textContent = item.type === 'sleep' ? '◐' : item.type === 'break' ? '↺' : '✦';
+
+    const info = document.createElement('div');
+    info.className = 'h-info';
+
+    const mode = document.createElement('div');
+    mode.className = 'h-mode';
+    mode.textContent = item.label; // textContentで安全に表示
+
+    const date = document.createElement('div');
+    date.className = 'h-date';
+    date.textContent = item.date;
+
+    info.appendChild(mode);
+    info.appendChild(date);
+    left.appendChild(icon);
+    left.appendChild(info);
+
+    const dur = document.createElement('div');
+    dur.className = 'h-dur';
+    dur.textContent = item.duration;
+
+    const del = document.createElement('div');
+    del.className = 'h-del';
+    del.textContent = '✕';
+    del.onclick = () => deleteHistoryEntry(item.id);
+
+    row.appendChild(left);
+    row.appendChild(dur);
+    row.appendChild(del);
+    wrap.appendChild(row);
+  });
+
+  const clearBtn = document.createElement('button');
+  clearBtn.className = 'info-link';
+  clearBtn.style.marginTop = '16px';
+  clearBtn.style.width = '100%';
+  clearBtn.textContent = '記録をすべて削除';
+  clearBtn.onclick = clearAllHistory;
+  wrap.appendChild(clearBtn);
+}
+
+// ===== NAVIGATION =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome() {
+  stopAllAudio();
+  renderGenbaStats();
+  showScreen('home');
+}
+
+function goMeditation() {
+  stopAllAudio();
+  showScreen('meditation');
+}
+
+// ===== SOUND (Web Audio API — 自然音風ノイズ) =====
+function initAudio() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+
+// ===== カウント音・終了音（自然音とは独立） =====
+function playBeep() {
+  if (!countSoundOn) return;
+  initAudio();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = 880;
+  gain.gain.setValueAtTime(0, audioCtx.currentTime);
+  gain.gain.linearRampToValueAtTime(0.22, audioCtx.currentTime + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.15);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.15);
+}
+
+// 終了音：確実に鳴らすため、カウント音設定とは独立させる。
+// AudioContextがバックグラウンドでサスペンドされている場合はresumeしてから鳴らす。
+function playFinishBell() {
+  initAudio();
+
+  const ring = () => {
+    const now = audioCtx.currentTime;
+    // ベルらしい質感: 基音＋倍音を重ねる（音量を強化、減衰も長め）
+    [660, 990, 1320, 1980].forEach((freq, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const vol = 0.35 / (i + 1);
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(vol, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.2);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 2.2);
+    });
+  };
+
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume().then(() => {
+      ring();
+      setTimeout(ring, 700);
+    }).catch(() => {});
+  } else {
+    ring();
+    setTimeout(ring, 700);
+  }
+}
+
+// ===== Wake Lock（タイマー中の画面消灯防止）共通 =====
+async function requestWakeLock() {
+  if (!('wakeLock' in navigator)) {
+    wakeLockUnsupported = true;
+    showWakeLockNote(true);
+    return;
+  }
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release', () => { wakeLock = null; });
+    showWakeLockNote(false);
+  } catch (e) {
+    wakeLockUnsupported = true;
+    showWakeLockNote(true);
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) {
+    try { wakeLock.release(); } catch {}
+    wakeLock = null;
+  }
+}
+
+function showWakeLockNote(show) {
+  document.querySelectorAll('.wake-lock-note').forEach(el => {
+    el.style.display = show ? 'block' : 'none';
+  });
+}
+
+function toggleCountSound() {
+  countSoundOn = !countSoundOn;
+  localStorage.setItem(COUNT_SOUND_KEY, countSoundOn ? '1' : '0');
+  updateCountSoundUI();
+}
+
+function updateCountSoundUI() {
+  document.querySelectorAll('.count-sound-toggle').forEach(el => {
+    el.classList.toggle('on', countSoundOn);
+    el.textContent = countSoundOn ? '🔔  カウント音 — ON' : '🔔  カウント音 — OFF';
+  });
+}
+
+// ===== 自然音：音源ファイル優先、無ければ生成波音にフォールバック =====
+const SOUND_SOURCES = {
+  ocean: 'assets/sounds/ocean-waves.mp3',
+  river: 'assets/sounds/river.mp3',
+  forest: 'assets/sounds/forest.mp3',
+  rain: 'assets/sounds/rain.mp3',
+};
+const SOUND_KEY = 'daimon_sound_type';
+let selectedSound = localStorage.getItem(SOUND_KEY) || 'silent'; // 初期値: 無音（標準OFF）
+
+function setSoundType(type) {
+  selectedSound = type;
+  localStorage.setItem(SOUND_KEY, type);
+  updateSoundTypeUI();
+
+  if (!noiseNode) return; // 再生中でなければ何もしない（次回再生時に新音源が使われる）
+
+  if (noiseNode.type === 'silent') {
+    // 無音から音源ありへ切り替え：再生中だった場合は新しい音源で開始
+    noiseNode = null;
+    if (type !== 'silent') startNoise(currentGentle);
+    return;
+  }
+
+  if (type === 'silent') {
+    // 音源あり→無音：停止
+    stopNoise();
+    noiseNode = { type: 'silent' };
+    return;
+  }
+
+  if (noiseNode.type === 'file') {
+    // 再生中の音源を、新しい音源に直接切り替える
+    const audioEl = noiseNode.audioEl;
+    const newSrc = SOUND_SOURCES[type] || SOUND_SOURCES.ocean;
+    try {
+      audioEl.pause();
+      audioEl.currentTime = 0;
+      audioEl.src = newSrc;
+      audioEl.load();
+      audioEl.play().catch(() => {});
+      noiseNode.src = newSrc;
+    } catch {}
+    return;
+  }
+
+  // 生成波音の場合は一度止めて新しい音源で再生し直す
+  stopNoise();
+  setTimeout(() => { if (soundOn || sleepSoundOn) startNoise(currentGentle); }, 450);
+}
+
+function updateSoundTypeUI() {
+  document.querySelectorAll('.sound-type-btn').forEach(btn => {
+    btn.classList.toggle('on', btn.dataset.sound === selectedSound);
+  });
+}
+
+let currentGentle = false;
+
+function startNoise(gentle) {
+  if (noiseNode) return;
+  currentGentle = !!gentle;
+
+  // 「無音」選択時は何も再生しない
+  if (selectedSound === 'silent') {
+    noiseNode = { type: 'silent' };
+    return;
+  }
+
+  const src = SOUND_SOURCES[selectedSound] || SOUND_SOURCES.ocean;
+  const audioEl = new Audio(src);
+  audioEl.loop = true;
+  audioEl.preload = 'auto';
+  audioEl.volume = gentle ? 0.5 : 0.6;
+
+  // すぐに登録（再生中の切り替え操作で重複起動しないように）
+  noiseNode = { type: 'file', audioEl, src };
+
+  let usedFallback = false;
+
+  const tryFallback = () => {
+    if (usedFallback) return;
+    usedFallback = true;
+    try { audioEl.pause(); } catch {}
+    noiseNode = null;
+    initAudio();
+    startGeneratedWave(gentle);
+  };
+
+  audioEl.addEventListener('error', tryFallback);
+  audioEl.play().catch(tryFallback);
+}
+
+// --- フォールバック：生成波音（Web Audio合成） ---
+function startGeneratedWave(gentle) {
+  if (noiseNode) return;
+  initAudio();
+
+  const bufferSize = 2 * audioCtx.sampleRate;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const output = buffer.getChannelData(0);
+
+  // ブラウンノイズ生成（波音のベース）
+  let last = 0;
+  for (let i = 0; i < bufferSize; i++) {
+    const white = Math.random() * 2 - 1;
+    last = (last + white * 0.05) / 1.02;
+    output[i] = last * 3.0;
+  }
+
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+  source.loop = true;
+
+  // --- 低音側：波の「ザザーッ」という本体 ---
+  const lowFilter = audioCtx.createBiquadFilter();
+  lowFilter.type = 'lowpass';
+  lowFilter.frequency.value = 700;
+
+  const lowGain = audioCtx.createGain();
+  lowGain.gain.value = 0.9;
+
+  // --- 高音側：引き際の「シュワシュワ」 ---
+  const highFilter = audioCtx.createBiquadFilter();
+  highFilter.type = 'highpass';
+  highFilter.frequency.value = 2200;
+
+  const highGain = audioCtx.createGain();
+  highGain.gain.value = 0.35;
+
+  // 全体ゲイン（フェードアウト等で使用）
+  const gain = audioCtx.createGain();
+  gain.gain.value = 0.18;
+
+  // 波本体の音量（不規則に変化させる）
+  const waveGain = audioCtx.createGain();
+  waveGain.gain.value = 0.0;
+
+  // 引き波（シュワシュワ）の音量
+  const highWaveGain = audioCtx.createGain();
+  highWaveGain.gain.value = 0.0;
+
+  // 接続：低音チェーン
+  source.connect(lowFilter);
+  lowFilter.connect(lowGain);
+  lowGain.connect(waveGain);
+  waveGain.connect(gain);
+
+  // 接続：高音チェーン
+  source.connect(highFilter);
+  highFilter.connect(highGain);
+  highGain.connect(highWaveGain);
+  highWaveGain.connect(gain);
+
+  gain.connect(audioCtx.destination);
+  source.start();
+
+  noiseNode = { type: 'generated', source, gain, waveGain, highWaveGain };
+
+  // ===== 不規則な波イベントをスケジュール =====
+  function scheduleWave() {
+    if (!noiseNode || noiseNode.type !== 'generated') return;
+    const now = audioCtx.currentTime;
+
+    // 波の強さ：小・普通・強 をランダムに混ぜる
+    // 睡眠モード(gentle)は強い波をかなり減らし、小波中心にする
+    const r = Math.random();
+    let peak;
+    if (gentle) {
+      if (r < 0.65) peak = 0.30 + Math.random() * 0.12;       // 小さい波（中心）
+      else if (r < 0.95) peak = 0.5 + Math.random() * 0.15;   // 普通の波
+      else peak = 0.7 + Math.random() * 0.15;                  // 強め（ごく稀）
+    } else {
+      if (r < 0.35) peak = 0.35 + Math.random() * 0.15;       // 小さい波
+      else if (r < 0.8) peak = 0.6 + Math.random() * 0.2;     // 普通の波
+      else peak = 0.9 + Math.random() * 0.3;                  // 強めの波
+    }
+
+    // タイミング：立ち上がり・持続・減衰もランダム
+    const attack  = 0.8 + Math.random() * 1.2;  // 0.8〜2.0秒
+    const sustain = 0.3 + Math.random() * 0.6;  // 0.3〜0.9秒
+    const decay   = 1.5 + Math.random() * 2.0;  // 1.5〜3.5秒
+
+    // --- 波本体（低音） ---
+    waveGain.gain.cancelScheduledValues(now);
+    waveGain.gain.setValueAtTime(waveGain.gain.value, now);
+    waveGain.gain.linearRampToValueAtTime(peak, now + attack);
+    waveGain.gain.setValueAtTime(peak, now + attack + sustain);
+    waveGain.gain.linearRampToValueAtTime(0.05, now + attack + sustain + decay);
+
+    // --- 引き波（シュワシュワ）：波本体が引く少し後にピーク ---
+    const fizzPeak = peak * (0.3 + Math.random() * 0.25);
+    const fizzDelay = attack * 0.5;
+    highWaveGain.gain.cancelScheduledValues(now);
+    highWaveGain.gain.setValueAtTime(highWaveGain.gain.value, now);
+    highWaveGain.gain.linearRampToValueAtTime(fizzPeak * 0.4, now + attack + fizzDelay);
+    highWaveGain.gain.linearRampToValueAtTime(fizzPeak, now + attack + sustain + decay * 0.4);
+    highWaveGain.gain.linearRampToValueAtTime(0.02, now + attack + sustain + decay * 1.3);
+
+    // 次の波までの間（不規則）：短い間、普通の間、長めの間
+    const gapR = Math.random();
+    let gap;
+    if (gapR < 0.3) gap = 1.5 + Math.random() * 1.5;        // 短い間
+    else if (gapR < 0.75) gap = 3 + Math.random() * 2.5;    // 普通の間
+    else gap = 6 + Math.random() * 4;                        // 長めの間
+
+    const totalDuration = (attack + sustain + decay + gap) * 1000;
+    bigWaveTimer = setTimeout(scheduleWave, totalDuration);
+  }
+  scheduleWave();
+}
+
+function stopNoise() {
+  if (!noiseNode) return;
+  const node = noiseNode;
+  noiseNode = null; // 先にnullにして、進行中のスケジュールを停止させる
+
+  if (node.type === 'silent') return; // 無音モードは何もしない
+
+  if (node.type === 'file') {
+    try {
+      // 簡易フェードアウトしてから停止
+      fadeAudioElToZero(node.audioEl, 0.3, () => {
+        try { node.audioEl.pause(); node.audioEl.currentTime = 0; } catch {}
+      });
+    } catch {}
+    return;
+  }
+
+  // 生成波音（Web Audio）
+  try {
+    if (bigWaveTimer) { clearTimeout(bigWaveTimer); bigWaveTimer = null; }
+    node.gain.gain.cancelScheduledValues(audioCtx.currentTime);
+    node.gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.3);
+
+    setTimeout(() => {
+      try { node.source.stop(); } catch {}
+    }, 400);
+  } catch {}
+}
+
+// <audio>要素のvolumeを短時間でフェードして停止するヘルパー
+function fadeAudioElToZero(audioEl, durationSec, onDone) {
+  const steps = 10;
+  const startVol = audioEl.volume;
+  const stepTime = (durationSec * 1000) / steps;
+  let i = 0;
+  const iv = setInterval(() => {
+    i++;
+    audioEl.volume = Math.max(0, startVol * (1 - i / steps));
+    if (i >= steps) {
+      clearInterval(iv);
+      if (onDone) onDone();
+    }
+  }, stepTime);
+}
+
+function stopAllAudio() {
+  stopNoise();
+}
+
+function toggleSound() {
+  soundOn = !soundOn;
+  const el = document.getElementById('soundToggle');
+  el.classList.toggle('on', soundOn);
+  el.textContent = soundOn ? '♪  自然音 — ON' : '♪  自然音 — OFF';
+  if (soundOn) startNoise(); else stopNoise();
+}
+
+function toggleSleepSound() {
+  sleepSoundOn = !sleepSoundOn;
+  const el = document.getElementById('sleepSoundToggle');
+  el.classList.toggle('on', sleepSoundOn);
+  el.textContent = sleepSoundOn ? '♪  自然音 — ON' : '♪  自然音 — OFF';
+  if (sleepSoundOn) startNoise(true); else stopNoise();
+}
+
+// ===== SESSION TIMER =====
+function startSession(value, unit, label) {
+  currentModeValue = value;
+  currentModeUnit = unit;
+  currentModeLabel = label;
+
+  totalSeconds = unit === 'secs' ? value : value * 60;
+  remainingSeconds = totalSeconds;
+  isPaused = false;
+
+  document.getElementById('sessionModeName').textContent = `${label}${value}${unit === 'secs' ? '秒' : '分'}`;
+  document.getElementById('sessionOneLine').textContent = MODE_CONTENT[label] || '整える';
+
+  document.getElementById('pauseBtn').textContent = '一旦止める';
+  document.getElementById('timerState').textContent = '進行中';
+  updateRing();
+  updateTimeDisplay();
+
+  showScreen('session');
+
+  // 自然音の状態を継承（前回ONなら再生）
+  const soundEl = document.getElementById('soundToggle');
+  soundEl.classList.toggle('on', soundOn);
+  soundEl.textContent = soundOn ? '♪  自然音 — ON' : '♪  自然音 — OFF';
+  if (soundOn) startNoise();
+
+  if (currentTimer) clearInterval(currentTimer);
+  currentTimer = setInterval(tick, 1000);
+}
+
+function tick() {
+  if (isPaused) return;
+  remainingSeconds--;
+  updateTimeDisplay();
+  updateRing();
+
+  if (remainingSeconds <= 5 && remainingSeconds >= 1) {
+    playBeep();
+  }
+
+  if (remainingSeconds <= 0) {
+    clearInterval(currentTimer);
+    currentTimer = null;
+    finishSession();
+  }
+}
+
+function updateTimeDisplay() {
+  const m = Math.floor(remainingSeconds / 60);
+  const s = remainingSeconds % 60;
+  document.getElementById('timerTime').textContent =
+    `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function updateRing() {
+  const pct = remainingSeconds / totalSeconds;
+  const offset = RING_CIRC * (1 - pct);
+  document.getElementById('tFill').style.strokeDashoffset = offset;
+}
+
+function togglePause() {
+  isPaused = !isPaused;
+  document.getElementById('pauseBtn').textContent = isPaused ? '再開する' : '一旦止める';
+  document.getElementById('timerState').textContent = isPaused ? '一時停止中' : '進行中';
+}
+
+function cancelSession() {
+  if (currentTimer) clearInterval(currentTimer);
+  currentTimer = null;
+  stopAllAudio();
+  goMeditation();
+}
+
+async function finishSession() {
+  playFinishBell();
+  stopAllAudio();
+
+  // 履歴保存
+  const durLabel = currentModeUnit === 'secs' ? `${currentModeValue}秒` : `${currentModeValue}分`;
+  saveHistoryEntry({
+    type: 'session',
+    label: currentModeLabel,
+    duration: durLabel,
+    date: formatDate(new Date()),
+  });
+
+  showScreen('complete');
+
+  const msgEl = document.getElementById('completeMsg');
+  msgEl.className = 'complete-msg loading';
+  msgEl.innerHTML = '';
+  const span = document.createElement('span');
+  span.textContent = '整理中';
+  const dots = document.createElement('div');
+  dots.className = 'dots';
+  [1,2,3].forEach(()=>dots.appendChild(document.createElement('span')));
+  msgEl.appendChild(span);
+  msgEl.appendChild(dots);
+
+  // 完了メッセージ（オフライン固定文 — AIコーチは本体統合時に接続）
+  const messages = {
+    '断ち切り': '一度、切れた。それでいい。',
+    '一息リセット': '整った。次の一手へ。',
+    '現場呼吸': '戻ってきた。今日も、ここから。',
+    '集中戻し': '戻った。崩れても、戻れる。',
+    '精度回復': '静かになった。これでいい。',
+    '深い整え': '深く、整った。確かに。',
+    'ストレス耐性': '持ちこたえた。それが証拠だ。',
+  };
+
+  await new Promise(r => setTimeout(r, 800)); // 演出のための短い待機
+
+  msgEl.className = 'complete-msg';
+  msgEl.textContent = messages[currentModeLabel] || '整った。';
+}
+
+// ===== SLEEP MODE =====
+let sleepDurationMin = 0; // 0 = 手動停止
+let sleepFadeStarted = false;
+
+function startSleep(durationMin) {
+  sleepSeconds = 0;
+  sleepDurationMin = durationMin;
+  sleepFadeStarted = false;
+  showScreen('sleep');
+
+  const el = document.getElementById('sleepSoundToggle');
+  el.classList.toggle('on', sleepSoundOn);
+  el.textContent = sleepSoundOn ? '♪  自然音 — ON' : '♪  自然音 — OFF';
+  if (sleepSoundOn) startNoise(true);
+
+  updateSleepElapsed();
+  if (sleepInterval) clearInterval(sleepInterval);
+  sleepInterval = setInterval(() => {
+    sleepSeconds++;
+    updateSleepElapsed();
+
+    if (sleepDurationMin > 0) {
+      const totalSec = sleepDurationMin * 60;
+      const remainingSec = totalSec - sleepSeconds;
+      const fadeStartSec = 5 * 60; // 最後5分
+
+      // 最後5分でフェードアウト開始（無音モードでは不要）
+      if (remainingSec <= fadeStartSec && remainingSec > 0 && !sleepFadeStarted && noiseNode && noiseNode.type !== 'silent') {
+        sleepFadeStarted = true;
+
+        if (noiseNode.type === 'file') {
+          // <audio>のvolumeを残り時間にかけてゆっくり0へ
+          const startVol = noiseNode.audioEl.volume;
+          const steps = Math.min(60, remainingSec); // 最大60段階
+          const stepTime = (remainingSec * 1000) / steps;
+          let i = 0;
+          const iv = setInterval(() => {
+            i++;
+            if (!noiseNode) { clearInterval(iv); return; }
+            noiseNode.audioEl.volume = Math.max(0, startVol * (1 - i / steps));
+            if (i >= steps) clearInterval(iv);
+          }, stepTime);
+        } else {
+          const now = audioCtx.currentTime;
+          noiseNode.gain.gain.cancelScheduledValues(now);
+          noiseNode.gain.gain.setValueAtTime(noiseNode.gain.gain.value, now);
+          noiseNode.gain.gain.linearRampToValueAtTime(0, now + remainingSec);
+          if (bigWaveTimer) { clearTimeout(bigWaveTimer); bigWaveTimer = null; }
+        }
+      }
+
+      if (remainingSec <= 0) {
+        endSleep();
+      }
+    }
+  }, 1000);
+}
+
+function updateSleepElapsed() {
+  const m = Math.floor(sleepSeconds / 60);
+  const s = sleepSeconds % 60;
+  document.getElementById('sleepElapsed').textContent =
+    `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+  const remEl = document.getElementById('sleepRemaining');
+  if (sleepDurationMin > 0) {
+    const remainingSec = Math.max(0, sleepDurationMin * 60 - sleepSeconds);
+    const rm = Math.floor(remainingSec / 60);
+    const rs = remainingSec % 60;
+    remEl.textContent = `残り ${String(rm).padStart(2,'0')}:${String(rs).padStart(2,'0')}`;
+  } else {
+    remEl.textContent = '';
+  }
+}
+
+function endSleep() {
+  if (sleepInterval) clearInterval(sleepInterval);
+  sleepInterval = null;
+  stopAllAudio();
+
+  // 履歴保存（1分以上の場合のみ記録）
+  if (sleepSeconds >= 60) {
+    const m = Math.floor(sleepSeconds / 60);
+    saveHistoryEntry({
+      type: 'sleep',
+      label: '眠れない時',
+      duration: `${m}分`,
+      date: formatDate(new Date()),
+    });
+  }
+
+  goMeditation();
+}
+function formatDate(d) {
+  return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+// ===== 現場休憩スイッチ：モード定義（第2弾で拡張しやすいよう分離） =====
+const GENBA_MODES = {
+  normal: {
+    title: '通常モード',
+    options: [
+      { workMin: 90, breakMin: 10 },
+      { workMin: 120, breakMin: 15 },
+      { workMin: 120, breakMin: 20 },
+    ],
+    checklist: ['水分補給', '肩を回す', '次の一手だけ確認'],
+  },
+  hot: {
+    title: '暑い日モード',
+    options: [
+      { workMin: 30, breakMin: 5 },
+      { workMin: 45, breakMin: 5 },
+      { workMin: 60, breakMin: 10 },
+    ],
+    checklist: ['水分補給', '塩分補給', '日陰へ移動', '身体を冷やす'],
+  },
+  heavy: {
+    title: '重作業モード',
+    options: [
+      { workMin: 60, breakMin: 10 },
+      { workMin: 75, breakMin: 10 },
+      { workMin: 90, breakMin: 15 },
+    ],
+    checklist: ['水分補給', '腰を伸ばす', '深呼吸', '次の一手だけ確認'],
+    note: 'ボード貼り・床貼り・荷揚げ・長時間中腰・集中作業向け',
+  },
+  lunch: {
+    title: '昼休憩',
+    options: [
+      { workMin: 0, breakMin: 45 },
+      { workMin: 0, breakMin: 60 },
+    ],
+    checklist: ['食事', '水分', '塩分', '10分目を閉じる', '午後の一手だけ確認'],
+  },
+};
+
+const MICRO_RESETS = {
+  1: { title: '1分リセット', checklist: ['水を飲む', '肩を回す', '手首を振る', '遠くを見る', '鼻呼吸3回', '次の一手だけ確認'] },
+  3: { title: '3分リセット', checklist: ['水分補給', '首肩を動かす', '股関節を動かす', '目を休める', '呼吸を整える'] },
+  5: { title: '5分リセット', checklist: ['座る', '水分補給', '腰を動かす', '肩を抜く', '目を閉じる', '次の一手確認'] },
+};
+
+// 休憩終了時のランダム文言（連続防止）
+const BREAK_DONE_MESSAGES = [
+  '休憩完了', '整った', '戻ろう', '次の一手へ',
+  '次、綺麗にいく', '今日も丁寧にいこう', '焦らなくていい', '一つずつやればいい',
+];
+let lastBreakDoneMessage = '';
+
+function pickBreakDoneMessage() {
+  let msg;
+  do {
+    msg = BREAK_DONE_MESSAGES[Math.floor(Math.random() * BREAK_DONE_MESSAGES.length)];
+  } while (msg === lastBreakDoneMessage && BREAK_DONE_MESSAGES.length > 1);
+  lastBreakDoneMessage = msg;
+  return msg;
+}
+
+// ===== 休憩モード（戻る一手）共通エンジン =====
+let nextActionText = '';
+let breakTimer = null;
+let breakTotalSeconds = 0;
+let breakRemainingSeconds = 0;
+let breakPaused = false;
+let breakWarningShown = false;
+let breakModeLabel = '休憩中';
+let breakChecklistItems = ['鼻呼吸', '肩の力を抜く', '目を閉じる'];
+let breakEndTime = 0;          // 終了予定の絶対時刻（Date.now()基準, ms）
+let breakPausedRemainingMs = 0; // 一時停止時点での残りミリ秒
+const NEXT_ACTION_KEY = 'daimon_next_action'; // 画面消灯・復帰後も消えないようlocalStorageにも保存
+
+// --- 自由休憩（既存：プリセット入力） ---
+function openBreakSetup() {
+  nextActionText = '';
+  const input = document.getElementById('nextActionInput');
+  if (input) input.value = '';
+  showScreen('breakSetup');
+}
+
+function setNextAction(text) {
+  const input = document.getElementById('nextActionInput');
+  if (input) input.value = text;
+}
+
+function startBreak(minutes) {
+  const input = document.getElementById('nextActionInput');
+  const val = (input?.value || '').trim().slice(0, 40);
+  const action = val || '次の一手だけ見る';
+  startGenbaBreak(minutes, '休憩中', ['鼻呼吸', '肩の力を抜く', '目を閉じる'], action, 'break');
+}
+
+// --- 現場休憩スイッチ：モード選択（通常/暑い日/重作業/昼休憩/マイクロ） ---
+let currentGenbaModeKey = null;
+let currentGenbaMicroMinutes = null;
+
+function setGenbaNextAction(text) {
+  const input = document.getElementById('genbaNextActionInput');
+  if (input) input.value = text;
+}
+
+function getGenbaNextAction() {
+  const input = document.getElementById('genbaNextActionInput');
+  const val = (input?.value || '').trim().slice(0, 40);
+  return val || '次の一手だけ見る';
+}
+
+function openGenbaMode(key) {
+  const mode = GENBA_MODES[key];
+  if (!mode) return;
+  currentGenbaModeKey = key;
+  currentGenbaMicroMinutes = null;
+
+  document.getElementById('genbaModeTitle').textContent = mode.title; // textContentで安全
+  document.getElementById('genbaModeNote').textContent = mode.note || '';
+  document.getElementById('genbaModeOptionsLabel').textContent = '作業 → 休憩 を選ぶ';
+
+  const input = document.getElementById('genbaNextActionInput');
+  if (input) input.value = '';
+
+  const optWrap = document.getElementById('genbaModeOptions');
+  optWrap.textContent = '';
+  mode.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'genba-time-btn genba-mode-opt';
+    const work = opt.workMin > 0 ? `${opt.workMin}分作業 → ` : '';
+    btn.textContent = `${work}${opt.breakMin}分休憩`; // textContentで安全
+    btn.onclick = () => startGenbaModeBreak(key, i);
+    optWrap.appendChild(btn);
+  });
+
+  showScreen('genbaModeSelect');
+}
+
+function startGenbaModeBreak(key, optIndex) {
+  const mode = GENBA_MODES[key];
+  const opt = mode.options[optIndex];
+  startGenbaBreak(opt.breakMin, mode.title, mode.checklist, getGenbaNextAction(), 'genba');
+}
+
+// --- マイクロリセット（1分/3分/5分）：同じ選択画面を使い、開始ボタン1つだけ表示 ---
+function openMicroSetup(minutes) {
+  const reset = MICRO_RESETS[minutes];
+  if (!reset) return;
+  currentGenbaModeKey = null;
+  currentGenbaMicroMinutes = minutes;
+
+  document.getElementById('genbaModeTitle').textContent = reset.title; // textContentで安全
+  document.getElementById('genbaModeNote').textContent = '';
+  document.getElementById('genbaModeOptionsLabel').textContent = '';
+
+  const input = document.getElementById('genbaNextActionInput');
+  if (input) input.value = '';
+
+  const optWrap = document.getElementById('genbaModeOptions');
+  optWrap.textContent = '';
+  const btn = document.createElement('button');
+  btn.className = 'genba-time-btn genba-mode-opt';
+  btn.textContent = `${minutes}分でスタート`; // textContentで安全
+  btn.onclick = () => startMicroReset(minutes);
+  optWrap.appendChild(btn);
+
+  showScreen('genbaModeSelect');
+}
+
+function startMicroReset(minutes) {
+  const reset = MICRO_RESETS[minutes];
+  if (!reset) return;
+  startGenbaBreak(minutes, reset.title, reset.checklist, getGenbaNextAction(), 'micro');
+}
+
+// --- 現場休憩スイッチ：共通エンジン ---
+// type: 'break'（自由休憩）/ 'genba'（モード休憩）/ 'micro'（マイクロリセット）
+function startGenbaBreak(minutes, label, checklist, nextAction, historyType) {
+  nextActionText = nextAction || '次の一手だけ見る';
+  localStorage.setItem(NEXT_ACTION_KEY, nextActionText); // 画面消灯・復帰後も消えないように保存
+  breakModeLabel = label;
+  breakChecklistItems = checklist && checklist.length ? checklist : ['呼吸を整える'];
+  breakHistoryType = historyType || 'genba';
+
+  breakTotalSeconds = Math.max(1, Math.round(minutes * 60));
+  breakRemainingSeconds = breakTotalSeconds;
+  breakPaused = false;
+  breakPausedRemainingMs = 0;
+  breakWarningShown = false;
+  breakEndTime = Date.now() + breakTotalSeconds * 1000;
+
+  document.getElementById('breakModeName').textContent = breakModeLabel; // textContentで安全
+  document.getElementById('breakPauseBtn').textContent = '一旦止める';
+  document.getElementById('breakTimerState').textContent = '整える';
+
+  // チェックリスト描画
+  const listEl = document.getElementById('breakChecklist');
+  listEl.textContent = '';
+  breakChecklistItems.forEach(item => {
+    const d = document.createElement('div');
+    d.textContent = item; // textContentで安全
+    listEl.appendChild(d);
+  });
+
+  updateBreakDisplay();
+  showScreen('breakSession');
+
+  requestWakeLock();
+
+  if (breakTimer) clearInterval(breakTimer);
+  breakTimer = setInterval(breakTick, 1000);
+}
+
+let breakHistoryType = 'genba';
+
+// 残り秒数を「終了予定の絶対時刻」から再計算する
+// setIntervalの間引き・スリープの影響を受けない
+function recalcBreakRemaining() {
+  if (breakPaused) return;
+  breakRemainingSeconds = Math.max(0, Math.ceil((breakEndTime - Date.now()) / 1000));
+}
+
+function breakTick() {
+  if (breakPaused) return;
+
+  const prevRemaining = breakRemainingSeconds;
+  recalcBreakRemaining();
+  updateBreakDisplay();
+
+  if (breakRemainingSeconds <= 5 && breakRemainingSeconds >= 1 && breakRemainingSeconds !== prevRemaining) {
+    playBeep();
+  }
+
+  // 休憩終了30秒前：全画面で「次の一手」を表示（必須演出）
+  if (breakRemainingSeconds <= 30 && breakRemainingSeconds > 0 && !breakWarningShown && breakTotalSeconds > 30) {
+    breakWarningShown = true;
+    showBreakWarning();
+  }
+
+  if (breakRemainingSeconds <= 0) {
+    clearInterval(breakTimer);
+    breakTimer = null;
+    finishBreak();
+  }
+}
+
+// ===== 復帰時の残り時間再計算（休憩中・画面消灯・バックグラウンド対策） =====
+function handleBreakReturnToForeground() {
+  if (!document.getElementById('breakSession').classList.contains('active')) return;
+  if (breakTimer === null && !breakPaused) return; // すでに終了済み
+  if (breakPaused) return;
+
+  recalcBreakRemaining();
+  updateBreakDisplay();
+
+  if (breakRemainingSeconds <= 0) {
+    if (breakTimer) { clearInterval(breakTimer); breakTimer = null; }
+    finishBreak();
+    return;
+  }
+
+  if (!wakeLock && !wakeLockUnsupported) {
+    requestWakeLock();
+  }
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    handleBreakReturnToForeground();
+  }
+});
+window.addEventListener('focus', handleBreakReturnToForeground);
+window.addEventListener('pageshow', handleBreakReturnToForeground);
+
+function showBreakWarning() {
+  // localStorageからも復元できるようにする（画面消灯・復帰後も消えない）
+  const savedAction = localStorage.getItem(NEXT_ACTION_KEY);
+  document.getElementById('breakWarningAction').textContent = savedAction || nextActionText; // textContentで安全
+  showScreen('breakWarning');
+
+  // 3秒表示してタイマー画面へ自動で戻る（タイマーは裏で進行継続）
+  setTimeout(() => {
+    if (document.getElementById('breakWarning').classList.contains('active')) {
+      showScreen('breakSession');
+    }
+  }, 3000);
+}
+
+function updateBreakDisplay() {
+  const m = Math.floor(breakRemainingSeconds / 60);
+  const s = breakRemainingSeconds % 60;
+  document.getElementById('breakTimerTime').textContent =
+    `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+  const pct = breakRemainingSeconds / breakTotalSeconds;
+  document.getElementById('breakRingFill').style.strokeDashoffset = RING_CIRC * (1 - pct);
+}
+
+function toggleBreakPause() {
+  breakPaused = !breakPaused;
+
+  if (breakPaused) {
+    breakPausedRemainingMs = Math.max(0, breakEndTime - Date.now());
+  } else {
+    breakEndTime = Date.now() + breakPausedRemainingMs;
+  }
+
+  document.getElementById('breakPauseBtn').textContent = breakPaused ? '再開する' : '一旦止める';
+  document.getElementById('breakTimerState').textContent = breakPaused ? '一時停止中' : '整える';
+}
+
+function finishBreak() {
+  playFinishBell();
+  releaseWakeLock();
+
+  saveHistoryEntry({
+    type: breakHistoryType,
+    label: breakModeLabel,
+    duration: `${Math.round(breakTotalSeconds / 60)}分`,
+    date: formatDate(new Date()),
+  });
+
+  // localStorageから次の一手を復元（画面消灯・復帰後も消えないように）
+  const savedAction = localStorage.getItem(NEXT_ACTION_KEY);
+  const finalAction = savedAction || nextActionText;
+
+  document.getElementById('breakDoneLabel').textContent = pickBreakDoneMessage(); // textContentで安全
+  document.getElementById('breakNextActionDisplay').textContent = finalAction; // textContentで安全
+  showScreen('breakDone');
+}
+
+function cancelBreak() {
+  if (breakTimer) clearInterval(breakTimer);
+  breakTimer = null;
+  releaseWakeLock();
+  goHome();
+}
+
+
+
+// ===== INIT =====
+renderHistory();
+updateCountSoundUI();
+updateSoundTypeUI();
+renderGenbaStats();
+
+// ===== PWA: Service Worker登録 =====
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
