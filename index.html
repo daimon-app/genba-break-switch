@@ -592,6 +592,13 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     ♪ &nbsp;自然音 — OFF
   </div>
 
+  <div class="session-note">
+    深く入る場合はスマホ標準アラームとの併用を推奨します。
+  </div>
+  <div class="session-note warn wake-lock-note" style="display:none;">
+    この端末は画面消灯防止に対応していません。スマホ標準アラームを併用してください。
+  </div>
+
   <div class="session-actions" style="margin-top:28px;">
     <button class="s-btn" id="pauseBtn" onclick="togglePause()">一旦止める</button>
     <button class="s-btn gold" onclick="cancelSession()">終了</button>
@@ -750,6 +757,8 @@ let currentTimer = null;
 let totalSeconds = 0;
 let remainingSeconds = 0;
 let isPaused = false;
+let sessionEndTime = 0;    // 終了予定の絶対時刻（Date.now()基準, ms）
+let pausedRemainingMs = 0; // 一時停止時点での残りミリ秒
 let wakeLock = null;
 let wakeLockUnsupported = false;
 let soundOn = false;
@@ -1349,6 +1358,8 @@ function startSession(value, unit, label) {
   totalSeconds = unit === 'secs' ? value : value * 60;
   remainingSeconds = totalSeconds;
   isPaused = false;
+  pausedRemainingMs = 0;
+  sessionEndTime = Date.now() + totalSeconds * 1000;
 
   document.getElementById('sessionModeName').textContent = `${label}${value}${unit === 'secs' ? '秒' : '分'}`;
   document.getElementById('sessionOneLine').textContent = MODE_CONTENT[label] || '整える';
@@ -1366,17 +1377,29 @@ function startSession(value, unit, label) {
   soundEl.textContent = soundOn ? '♪  自然音 — ON' : '♪  自然音 — OFF';
   if (soundOn) startNoise();
 
+  requestWakeLock();
+
   if (currentTimer) clearInterval(currentTimer);
   currentTimer = setInterval(tick, 1000);
 }
 
+// 残り秒数を「終了予定の絶対時刻」から再計算する
+// setIntervalの間引き・スリープの影響を受けない
+function recalcRemaining() {
+  if (isPaused) return;
+  remainingSeconds = Math.max(0, Math.ceil((sessionEndTime - Date.now()) / 1000));
+}
+
 function tick() {
   if (isPaused) return;
-  remainingSeconds--;
+
+  const prevRemaining = remainingSeconds;
+  recalcRemaining();
   updateTimeDisplay();
   updateRing();
 
-  if (remainingSeconds <= 5 && remainingSeconds >= 1) {
+  // カウント音：5,4,3,2,1のいずれかを跨いだら鳴らす
+  if (remainingSeconds <= 5 && remainingSeconds >= 1 && remainingSeconds !== prevRemaining) {
     playBeep();
   }
 
@@ -1384,6 +1407,27 @@ function tick() {
     clearInterval(currentTimer);
     currentTimer = null;
     finishSession();
+  }
+}
+
+// ===== 復帰時の残り時間再計算（瞑想セッション・画面消灯・バックグラウンド対策） =====
+function handleSessionReturnToForeground() {
+  if (!document.getElementById('session').classList.contains('active')) return;
+  if (currentTimer === null && !isPaused) return; // すでに終了済み
+  if (isPaused) return;
+
+  recalcRemaining();
+  updateTimeDisplay();
+  updateRing();
+
+  if (remainingSeconds <= 0) {
+    if (currentTimer) { clearInterval(currentTimer); currentTimer = null; }
+    finishSession();
+    return;
+  }
+
+  if (!wakeLock && !wakeLockUnsupported) {
+    requestWakeLock();
   }
 }
 
@@ -1402,6 +1446,13 @@ function updateRing() {
 
 function togglePause() {
   isPaused = !isPaused;
+
+  if (isPaused) {
+    pausedRemainingMs = Math.max(0, sessionEndTime - Date.now());
+  } else {
+    sessionEndTime = Date.now() + pausedRemainingMs;
+  }
+
   document.getElementById('pauseBtn').textContent = isPaused ? '再開する' : '一旦止める';
   document.getElementById('timerState').textContent = isPaused ? '一時停止中' : '進行中';
 }
@@ -1410,12 +1461,14 @@ function cancelSession() {
   if (currentTimer) clearInterval(currentTimer);
   currentTimer = null;
   stopAllAudio();
+  releaseWakeLock();
   goMeditation();
 }
 
 async function finishSession() {
   playFinishBell();
   stopAllAudio();
+  releaseWakeLock();
 
   // 履歴保存
   const durLabel = currentModeUnit === 'secs' ? `${currentModeValue}秒` : `${currentModeValue}分`;
@@ -1821,10 +1874,17 @@ function handleBreakReturnToForeground() {
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
     handleBreakReturnToForeground();
+    handleSessionReturnToForeground();
   }
 });
-window.addEventListener('focus', handleBreakReturnToForeground);
-window.addEventListener('pageshow', handleBreakReturnToForeground);
+window.addEventListener('focus', () => {
+  handleBreakReturnToForeground();
+  handleSessionReturnToForeground();
+});
+window.addEventListener('pageshow', () => {
+  handleBreakReturnToForeground();
+  handleSessionReturnToForeground();
+});
 
 function showBreakWarning() {
   // localStorageからも復元できるようにする（画面消灯・復帰後も消えない）
