@@ -1,7 +1,7 @@
 // DAIMON Service Worker
 // オフラインでも開けるようにキャッシュする
 
-const CACHE_NAME = 'daimon-v5';
+const CACHE_NAME = 'daimon-v8';
 const ASSETS = [
   './',
   './index.html',

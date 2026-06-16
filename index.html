@@ -65,6 +65,11 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 }
 .genba-home-btn:hover{border-color:#D4AF37;color:#D4AF37;background:rgba(212,175,55,0.06);}
 .genba-home-btn.small{padding:18px 4px;font-size:13px;}
+.genba-home-btn.wide{width:100%;padding:20px 8px;font-size:16px;border-color:#D4AF37;}
+.genba-btn-sub{display:block;margin-top:6px;font-size:11px;color:#999999;letter-spacing:0.5px;}
+.genba-time-main{max-width:300px;margin-top:8px;}
+.genba-time-main .genba-custom-input{flex:0 0 110px;width:110px;font-size:22px;}
+.genba-time-main .genba-custom-btn{font-size:18px;}
 
 .genba-home-stats{
   width:100%;max-width:400px;
@@ -421,12 +426,15 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   </div>
 
   <div class="genba-home-section">
-    <div class="genba-home-grid">
+    <div class="genba-home-grid three">
       <button class="genba-home-btn" onclick="openGenbaMode('normal')">通常モード</button>
       <button class="genba-home-btn" onclick="openGenbaMode('hot')">暑い日モード</button>
       <button class="genba-home-btn" onclick="openGenbaMode('heavy')">重作業モード</button>
-      <button class="genba-home-btn" onclick="openGenbaMode('lunch')">昼休憩</button>
     </div>
+  </div>
+
+  <div class="genba-home-section">
+    <button class="genba-home-btn wide" onclick="openBreakSetup()">時間休憩<br><span class="genba-btn-sub">休憩時間を決めて休む（昼休憩もこれ）</span></button>
   </div>
 
   <div class="genba-home-section">
@@ -442,7 +450,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   <div class="genba-home-stats" id="genbaHomeStats"></div>
 
   <div class="genba-home-links">
-    <button class="genba-link-btn" onclick="openBreakSetup()">自由休憩</button>
     <button class="genba-link-btn" onclick="renderHistory();showScreen('history')">記録</button>
     <button class="genba-link-btn" onclick="showScreen('meditation')">瞑想・整えタイマー</button>
   </div>
@@ -683,31 +690,17 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     <span class="arrow">←</span> 戻る
   </div>
 
-  <div class="genba-title">休憩</div>
-  <div class="genba-sub">休憩後、最初にやることを決めておく</div>
+  <div class="genba-title">時間休憩</div>
+  <div class="genba-sub">休憩は、時間を決めないと終わらない</div>
 
   <div class="genba-input-wrap">
-    <input type="text" id="nextActionInput" class="genba-input" placeholder="例：ボードを1枚貼る" maxlength="40">
-    <div class="genba-presets">
-      <button class="genba-preset-btn" onclick="setNextAction('間柱を入れる')">間柱を入れる</button>
-      <button class="genba-preset-btn" onclick="setNextAction('ボードを1枚貼る')">ボードを1枚貼る</button>
-      <button class="genba-preset-btn" onclick="setNextAction('墨出しをする')">墨出しをする</button>
-      <button class="genba-preset-btn" onclick="setNextAction('次の一手だけ見る')">次の一手だけ見る</button>
-    </div>
+    <input type="text" id="nextActionInput" class="genba-input" placeholder="休憩後の最初の一手（例：ボードを1枚貼る）" maxlength="40">
   </div>
 
-  <div class="genba-time-label">休憩時間</div>
-  <div class="genba-time-row">
-    <button class="genba-time-btn" onclick="startBreak(3)">3分</button>
-    <button class="genba-time-btn" onclick="startBreak(5)">5分</button>
-    <button class="genba-time-btn" onclick="startBreak(10)">10分</button>
-    <button class="genba-time-btn" onclick="startBreak(15)">15分</button>
-    <button class="genba-time-btn" onclick="startBreak(20)">20分</button>
-    <button class="genba-time-btn" onclick="startBreak(30)">30分</button>
-  </div>
-  <div class="genba-custom-row">
-    <input type="number" id="freeBreakCustom" class="genba-custom-input" min="1" max="180" placeholder="分">
-    <button class="genba-time-btn genba-custom-btn" onclick="startFreeBreakCustom()">自由入力でスタート</button>
+  <div class="genba-time-label">休憩時間を決める</div>
+  <div class="genba-custom-row genba-time-main">
+    <input type="number" id="freeBreakCustom" class="genba-custom-input" min="1" max="180" placeholder="分" inputmode="numeric">
+    <button class="genba-time-btn genba-custom-btn" onclick="startFreeBreakCustom()">開始</button>
   </div>
 </div>
 
@@ -1650,20 +1643,6 @@ const GENBA_MODES = {
     ],
     checklist: ['水分補給', '腰を伸ばす', '深呼吸', '次の一手だけ確認'],
     note: 'ボード貼り・床貼り・荷揚げ・長時間中腰・集中作業向け',
-  },
-  lunch: {
-    title: '昼休憩',
-    options: [
-      { workMin: 0, breakMin: 30 },
-      { workMin: 0, breakMin: 35 },
-      { workMin: 0, breakMin: 40 },
-      { workMin: 0, breakMin: 45 },
-      { workMin: 0, breakMin: 50 },
-      { workMin: 0, breakMin: 55 },
-      { workMin: 0, breakMin: 60 },
-    ],
-    checklist: ['食事', '水分', '塩分', '10分目を閉じる', '午後の一手だけ確認'],
-    allowCustom: true,
   },
 };
 
