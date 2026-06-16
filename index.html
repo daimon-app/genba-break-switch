@@ -324,13 +324,21 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .genba-preset-btn:hover{border-color:#D4AF37;color:#D4AF37;}
 
 .genba-time-label{font-size:10px;letter-spacing:4px;color:#888888;text-transform:uppercase;margin-bottom:12px;}
-.genba-time-row{display:flex;gap:10px;width:100%;max-width:360px;}
+.genba-time-row{display:flex;flex-wrap:wrap;gap:10px;width:100%;max-width:360px;}
 .genba-time-btn{
-  flex:1;padding:18px 8px;background:#1a1a1a;border:1px solid #333333;
+  flex:1 1 28%;padding:18px 8px;background:#1a1a1a;border:1px solid #333333;
   color:#ffffff;font-family:'Playfair Display',serif;font-size:18px;
   cursor:pointer;transition:all 0.2s;
 }
 .genba-time-btn:hover{border-color:#D4AF37;color:#D4AF37;background:rgba(212,175,55,0.06);}
+.genba-home-grid.four{grid-template-columns:1fr 1fr 1fr 1fr;}
+.genba-custom-row{display:flex;gap:10px;width:100%;max-width:360px;margin-top:12px;align-items:stretch;}
+.genba-custom-input{
+  width:80px;flex:0 0 80px;padding:14px 10px;background:#1a1a1a;border:1px solid #333333;
+  color:#ffffff;font-size:18px;text-align:center;
+}
+.genba-custom-input:focus{outline:none;border-color:#D4AF37;}
+.genba-custom-btn{flex:1;font-size:15px;font-family:inherit;}
 
 /* BREAK SESSION */
 #breakSession{padding:24px;}
@@ -423,7 +431,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
   <div class="genba-home-section">
     <div class="genba-home-label">マイクロ休憩</div>
-    <div class="genba-home-grid three">
+    <div class="genba-home-grid four">
+      <button class="genba-home-btn small" onclick="openMicroSetup(0.5)">30秒<br>リセット</button>
       <button class="genba-home-btn small" onclick="openMicroSetup(1)">1分<br>リセット</button>
       <button class="genba-home-btn small" onclick="openMicroSetup(3)">3分<br>リセット</button>
       <button class="genba-home-btn small" onclick="openMicroSetup(5)">5分<br>リセット</button>
@@ -689,10 +698,16 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
   <div class="genba-time-label">休憩時間</div>
   <div class="genba-time-row">
+    <button class="genba-time-btn" onclick="startBreak(3)">3分</button>
     <button class="genba-time-btn" onclick="startBreak(5)">5分</button>
     <button class="genba-time-btn" onclick="startBreak(10)">10分</button>
     <button class="genba-time-btn" onclick="startBreak(15)">15分</button>
     <button class="genba-time-btn" onclick="startBreak(20)">20分</button>
+    <button class="genba-time-btn" onclick="startBreak(30)">30分</button>
+  </div>
+  <div class="genba-custom-row">
+    <input type="number" id="freeBreakCustom" class="genba-custom-input" min="1" max="180" placeholder="分">
+    <button class="genba-time-btn genba-custom-btn" onclick="startFreeBreakCustom()">自由入力でスタート</button>
   </div>
 </div>
 
@@ -1639,17 +1654,24 @@ const GENBA_MODES = {
   lunch: {
     title: '昼休憩',
     options: [
+      { workMin: 0, breakMin: 30 },
+      { workMin: 0, breakMin: 35 },
+      { workMin: 0, breakMin: 40 },
       { workMin: 0, breakMin: 45 },
+      { workMin: 0, breakMin: 50 },
+      { workMin: 0, breakMin: 55 },
       { workMin: 0, breakMin: 60 },
     ],
     checklist: ['食事', '水分', '塩分', '10分目を閉じる', '午後の一手だけ確認'],
+    allowCustom: true,
   },
 };
 
 const MICRO_RESETS = {
-  1: { title: '1分リセット', checklist: ['水を飲む', '肩を回す', '手首を振る', '遠くを見る', '鼻呼吸3回', '次の一手だけ確認'] },
-  3: { title: '3分リセット', checklist: ['水分補給', '首肩を動かす', '股関節を動かす', '目を休める', '呼吸を整える'] },
-  5: { title: '5分リセット', checklist: ['座る', '水分補給', '腰を動かす', '肩を抜く', '目を閉じる', '次の一手確認'] },
+  0.5: { title: '30秒リセット', label: '30秒', checklist: ['目を閉じる', '鼻呼吸', '肩を抜く', 'スマホから離れる', '仕事へ戻る準備'] },
+  1: { title: '1分リセット', label: '1分', checklist: ['水を飲む', '肩を回す', '手首を振る', '遠くを見る', '鼻呼吸3回', '次の一手だけ確認'] },
+  3: { title: '3分リセット', label: '3分', checklist: ['水分補給', '首肩を動かす', '股関節を動かす', '目を休める', '呼吸を整える'] },
+  5: { title: '5分リセット', label: '5分', checklist: ['座る', '水分補給', '腰を動かす', '肩を抜く', '目を閉じる', '次の一手確認'] },
 };
 
 // 休憩終了時のランダム文言（連続防止）
@@ -1701,6 +1723,15 @@ function startBreak(minutes) {
   startGenbaBreak(minutes, '休憩中', ['鼻呼吸', '肩の力を抜く', '目を閉じる'], action, 'break');
 }
 
+// 自由休憩：分を自由入力してスタート
+function startFreeBreakCustom() {
+  const el = document.getElementById('freeBreakCustom');
+  let min = parseInt(el?.value, 10);
+  if (isNaN(min) || min < 1) { el?.focus(); return; }
+  if (min > 180) min = 180;
+  startBreak(min);
+}
+
 // --- 現場休憩スイッチ：モード選択（通常/暑い日/重作業/昼休憩/マイクロ） ---
 let currentGenbaModeKey = null;
 let currentGenbaMicroMinutes = null;
@@ -1740,7 +1771,41 @@ function openGenbaMode(key) {
     optWrap.appendChild(btn);
   });
 
+  // 自由入力（昼休憩など）：分を直接指定できる欄を追加
+  if (mode.allowCustom) {
+    const row = document.createElement('div');
+    row.className = 'genba-custom-row';
+
+    const inp = document.createElement('input');
+    inp.type = 'number';
+    inp.min = '1';
+    inp.max = '180';
+    inp.placeholder = '分';
+    inp.className = 'genba-custom-input';
+    inp.id = 'genbaModeCustom';
+
+    const cbtn = document.createElement('button');
+    cbtn.className = 'genba-time-btn genba-custom-btn';
+    cbtn.textContent = '自由入力でスタート';
+    cbtn.onclick = () => startGenbaModeCustom(key);
+
+    row.appendChild(inp);
+    row.appendChild(cbtn);
+    optWrap.appendChild(row);
+  }
+
   showScreen('genbaModeSelect');
+}
+
+// 昼休憩などの自由入力スタート
+function startGenbaModeCustom(key) {
+  const mode = GENBA_MODES[key];
+  if (!mode) return;
+  const el = document.getElementById('genbaModeCustom');
+  let min = parseInt(el?.value, 10);
+  if (isNaN(min) || min < 1) { el?.focus(); return; }
+  if (min > 180) min = 180;
+  startGenbaBreak(min, mode.title, mode.checklist, getGenbaNextAction(), 'genba');
 }
 
 function startGenbaModeBreak(key, optIndex) {
@@ -1767,7 +1832,7 @@ function openMicroSetup(minutes) {
   optWrap.textContent = '';
   const btn = document.createElement('button');
   btn.className = 'genba-time-btn genba-mode-opt';
-  btn.textContent = `${minutes}分でスタート`; // textContentで安全
+  btn.textContent = `${reset.label}でスタート`; // textContentで安全
   btn.onclick = () => startMicroReset(minutes);
   optWrap.appendChild(btn);
 
