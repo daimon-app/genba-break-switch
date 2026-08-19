@@ -31,7 +31,7 @@
     {
       "id": "Q-06",
       "status": "PASS",
-      "detail": "Service worker cache includes public pages and core assets; no unimplemented push API is claimed by code."
+      "detail": "Service worker cache includes public pages and core assets; HTML is network-first so public policy and safety updates can reach existing users; no unimplemented push API is claimed by code."
     },
     {
       "id": "Q-07",

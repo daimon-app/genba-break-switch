@@ -94,7 +94,7 @@ def main() -> int:
     else:
         results.append(result("Q-04", "PASS", "All local links in public HTML pages resolve to existing files."))
 
-    start_ok = 'href="index.html">無料で試す' in page_texts["start.html"] and "FREE PUBLIC BETA" in page_texts["start.html"]
+    start_ok = 'href="index.html?v=20260819">無料で試す' in page_texts["start.html"] and "FREE PUBLIC BETA" in page_texts["start.html"]
     no_form = not any(re.search(r"<form\b", text, re.IGNORECASE) for text in page_texts.values())
     commerce_ok = "現在、購入できる有償商品はありません。" in page_texts["commerce.html"]
     if start_ok and no_form and commerce_ok:
@@ -140,10 +140,10 @@ def main() -> int:
             if not (ROOT / normalized).is_file():
                 missing_cache.append(f"{asset} (missing file)")
     no_push = all(token not in sw_text and token not in page_texts["index.html"] for token in ["PushManager", "showNotification", "Notification.requestPermission"])
-    if not missing_cache and "kirikae-v9" in sw_text and no_push:
-        results.append(result("Q-06", "PASS", "Service worker cache includes public pages and core assets; no unimplemented push API is claimed by code."))
+    if not missing_cache and "kirikae-v10" in sw_text and no_push and "fetch(event.request)" in sw_text:
+        results.append(result("Q-06", "PASS", "Service worker cache includes public pages and core assets; HTML is network-first so public policy and safety updates can reach existing users; no unimplemented push API is claimed by code."))
     else:
-        results.append(result("Q-06", "FAIL", f"missing_cache={missing_cache}; cache_version={'kirikae-v9' in sw_text}; no_push_api={no_push}"))
+        results.append(result("Q-06", "FAIL", f"missing_cache={missing_cache}; cache_version={'kirikae-v10' in sw_text}; network_first={'fetch(event.request)' in sw_text}; no_push_api={no_push}"))
         failures += 1
 
     home_links_ok = 'href="start.html">使い方・無料公開ベータ' in page_texts["index.html"] and 'href="faq.html">FAQ・安全上の注意' in page_texts["index.html"]

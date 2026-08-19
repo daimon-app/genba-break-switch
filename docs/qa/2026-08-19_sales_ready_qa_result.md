@@ -14,7 +14,7 @@
 | LP→PWA導線 | PASS | LPの「無料で試す」から `http://localhost:4173/index.html` へ遷移し、ホーム画面を確認。 |
 | PWAホーム名称・導線 | PASS | 「切り替えスイッチ」の表示、既存機能、案内LPとFAQへのリンクを確認。 |
 | モバイル実機 | NOT RUN | 実機確認が必要。 |
-| 公開GitHub Pages | PENDING | 施工コミット・push後に再確認する。 |
+| 公開GitHub Pages | PASS（LP）／TECH_FIX_REQUIRED（PWAキャッシュ） | `start.html` の初回404はPagesビルド中に発生し、build success後に解消。既存Service Workerキャッシュから旧 `index.html` が表示される問題を検出し、v10・HTMLネットワーク優先・バージョン付き導線で修正中。 |
 
 ## 実施したQA
 
@@ -43,13 +43,18 @@
 | Q-08-E | 「現場に戻る」を選択 | PASS | ホームへ戻り、今日・今週の集計が各1回へ更新された。 |
 | Q-08-F | 瞑想・整えタイマーで30秒「断ち切り」を選択 | PASS | 「断ち切り30秒」、残り時間、固定の再始動メッセージ「次の一手だけ見る」、自然音切替、一時停止・終了を表示した。標準アラーム併用の注意も表示。 |
 | Q-08-G | 瞑想・整えタイマーで1分「一息リセット」を選択 | PASS | 「一息リセット1分」、残り `00:59`、固定の再始動メッセージ「肩の力を抜く」、自然音切替、一時停止・終了を表示した。 |
+| Q-11-A | GitHub PagesのLPを初回確認 | FAIL→PASS | push直後はPagesが `building` でLPが404。build success（run `32204066051`）後に `start.html` は公開・表示を確認。 |
+| Q-11-B | 公開LPからPWAへ遷移 | FAIL（修正済み・公開再QA待ち） | 既存のキャッシュ利用環境では旧「現場休憩スイッチ」画面・旧ホーム導線が表示された。旧Service Workerのcache-first HTML応答が原因。 |
+| Q-06-R | キャッシュ修正の静的再QA | PASS | `kirikae-v10`、HTMLのnetwork-first取得、PWAリンクの `?v=20260819` 付与、全ローカルリンク整合を自動検証。公開後の再QAは修正push後に実施する。 |
 
 ## FAIL／TECH_FIX_REQUIRED
 
-現時点の静的QAとローカル画面確認ではBLOCKERは未検出。
+初回のLP 404はGitHub Pagesのビルド完了後に解消した。一方、既存Service Workerが旧HTMLをcache-firstで返すため、既存利用者に旧名称・旧導線が表示されるTECH_FIX_REQUIREDを検出した。修正の公開反映・再QAが完了するまで、無料公開ベータの外部告知を開始しない。
 
 | 区分 | 内容 | 対応 |
 | --- | --- | --- |
+| RESOLVED | `https://daimon-app.github.io/genba-break-switch/start.html` の初回GitHub Pages 404。 | Pages build success後に公開LPを再確認し、正常表示を確認。初回404はビルド反映待ちとしてクローズ。 |
+| TECH_FIX_REQUIRED | 既存Service Workerがcache-firstで旧 `index.html` を返し、既存利用者が旧名称・旧導線を見る。 | `kirikae-v10`、HTMLのnetwork-first応答、LP等からのバージョン付きPWAリンクに修正。push後に公開再QAする。 |
 | TECH_FIX_REQUIRED（監査対象） | `icons/service-worker.js` はルートのアクティブService Workerとは別に存在し、旧キャッシュ名を持つ。現行登録はルートの `service-worker.js` だが、将来の混乱を防ぐため削除または同期を検討する。 | コードの利用経路をQAで確認した上で、不要なら別施工単位で整理する。 |
 | TECH_FIX_REQUIRED（監査対象） | ルートに音源・アイコンの重複ファイルがあり、アクティブ実装は `assets/sounds/` と `icons/` を使用する。 | 配布容量・更新誤認を避けるため、利用有無を確認して別施工単位で整理する。 |
 | LIMITATION | OS通知、OSアラーム、バックグラウンド終了通知、Wake Lockの恒常成功、端末別の追加体験は保証不可。 | LP、FAQ、規約に明示済み。実機QAで挙動を記録する。 |
@@ -57,6 +62,6 @@
 
 ## 次のQA
 
-1. 30秒リセット・瞑想30秒・瞑想1分・一時停止・終了処理・次の一手をローカルブラウザで検証する。
-2. 公開GitHub Pagesへ反映後、各公開ページとPWA導線を再検証する。
+1. Service Workerキャッシュ修正をpushし、公開GitHub PagesのLP→PWAが新名称・新導線で表示されることを再QAする。
+2. FAQ、追加方法、規約、Privacy、販売案内、サポートの公開到達を確認する。
 3. 可能であればAndroid ChromeとiPhone Safariで、ホーム画面追加、画面消灯防止の表示、復帰時の残時間再計算を実機検証する。

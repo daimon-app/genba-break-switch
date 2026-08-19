@@ -5,16 +5,16 @@
 | 項目 | 現在値 |
 | --- | --- |
 | Product | **切り替えスイッチ**（現行コード内表記: 「現場休憩スイッチ」） |
-| Current Stage | **Stage 4/6 完了 — 無料公開ベータ向けLP・法務・サポート導線を施工済み。次は公開後QA・販売監査。** |
+| Current Stage | **Stage 5/6 — 公開GitHub Pages QA・販売監査・キャッシュ修正・再QA中** |
 | Repository | [`daimon-app/genba-break-switch`](https://github.com/daimon-app/genba-break-switch) |
 | Branch | `main` |
 | HEAD at start | `daaf6170220880c36da612935ba9c2dce11089ab` |
 | GitHub Pages | `https://daimon-app.github.io/genba-break-switch/`（公開・HTTPS強制） |
-| Latest QA | 静的QA PASS、ローカルLP・PWA主要導線・30秒リセット・瞑想30秒／1分の手動QA PASS。公開GitHub PagesとiOS／Android実機QAは未実施。詳細は `docs/qa/2026-08-19_sales_ready_qa_result.md`。 |
+| Latest QA | 静的QA PASS、ローカル主要導線QA PASS、公開LP QA PASS。公開PWAで旧Service Workerキャッシュによる旧名称・旧導線を検出し、v10に修正・公開再QA待ち。iOS／Android実機QAは未実施。詳細は `docs/qa/2026-08-19_sales_ready_qa_result.md`。 |
 | Latest Audit | 初期実装・市場・プラットフォーム調査、販売表示・個人情報調査、商品・販売仕様、GitHub Pages商取引制約、LP・法務・サポート施工を正本化済み。販売最終監査は未実施。 |
-| Blockers | 有償販売はGitHub Pagesでは開始不可。販売者情報、商取引可能な販売基盤、決済事業者、正式価格、返金ポリシーの本人確定が未了。OSバックグラウンド通知・OSアラームは現行未実装。 |
+| Blockers | 有償販売はGitHub Pagesでは開始不可。無料公開ベータの外部告知はService Workerキャッシュ修正の公開再QAまで保留。販売者情報、商取引可能な販売基盤、決済事業者、正式価格、返金ポリシーの本人確定が未了。OSバックグラウンド通知・OSアラームは現行未実装。 |
 | Approval Required | 商品名最終確定、販売形態・価格、販売者名・住所・連絡先、問い合わせ窓口、返金条件、公開・販売開始可否。 |
-| Next Action | LP・法務・サポート施工をコミット・pushし、公開GitHub Pagesで再QA、販売監査、必要修正、再QAを実施する。購入・決済は有効化しない。 |
+| Next Action | Service Workerキャッシュ修正をコミット・pushし、公開LP→PWAの再QA、全公開ページの到達確認、販売監査を行う。購入・決済は有効化しない。 |
 
 ## このリポジトリで作っているもの
 
@@ -49,8 +49,8 @@
 | 1 | GitHub正本確認、受領仕様書保存、MASTER作成 | 完了 |
 | 2 | 一次情報による市場・競合・プラットフォーム・表示要件調査 | 完了 |
 | 3 | 商品・価格・販売導線・差別化の仕様と意思決定 | 完了 |
-| 4 | LP・FAQ・規約・プライバシー・問い合わせ導線の施工 | 完了（commit前） |
-| 5 | 実装QA、販売監査、修正、再QA | 次工程 |
+| 4 | LP・FAQ・規約・プライバシー・問い合わせ導線の施工 | 完了（commit `f1ed9e57fd35a2f26eeacbff03d215ccc9e34d61`・push済み） |
+| 5 | 実装QA、販売監査、修正、再QA | 進行中（キャッシュ修正・公開再QA待ち） |
 | 6 | HEAD／監査／QA／判定の確定、GitHub正本更新、最終報告 | 未開始 |
 
 ## 更新履歴
@@ -60,4 +60,5 @@
 | 2026-08-19 | 1 | GitHub正本を確認し、施工仕様書、正本運用ルール、初回調査、MASTERを作成・pushした。 | `docs/specs/`、`docs/research/`、commit `89e2bed3f3adc95d2c11160dea9a42a6a59050dd` |
 | 2026-08-19 | 2 | 公開PWAの初期画面、OS／PWA制約、競合、販売表示・個人情報の一次情報調査を完了・pushした。 | `docs/research/`、commit `82f69c861f5483e559053b4841298f3236e34018` |
 | 2026-08-19 | 3 | 商品価値、対象顧客、競合上の位置づけ、無料公開ベータ案、有償化条件、販売文言ガードレールを仕様化・pushした。 | `docs/sales/2026-08-19_product_and_go_to_market_spec.md`、commit `82eb228f4771f03f84970e830f5f8f90024d212d` |
-| 2026-08-19 | 4 | GitHub Pagesを有償商取引に使わない方針を記録し、無料公開ベータ向けLP、FAQ、追加方法、利用規約、Privacy、販売案内、公開フィードバック、SNS素材、PWA本体からの導線を施工した。静的QAとローカル主要導線QAをPASS。 | `start.html`、`faq.html`、`install.html`、`terms.html`、`privacy.html`、`commerce.html`、`support.html`、`docs/sales/`、`docs/qa/` |
+| 2026-08-19 | 4 | GitHub Pagesを有償商取引に使わない方針を記録し、無料公開ベータ向けLP、FAQ、追加方法、利用規約、Privacy、販売案内、公開フィードバック、SNS素材、PWA本体からの導線を施工した。静的QAとローカル主要導線QAをPASS。 | `start.html`、`faq.html`、`install.html`、`terms.html`、`privacy.html`、`commerce.html`、`support.html`、`docs/sales/`、`docs/qa/`、commit `f1ed9e57fd35a2f26eeacbff03d215ccc9e34d61` |
+| 2026-08-19 | 5 | 公開LP初回404はPagesビルド完了後に解消。公開PWAで既存Service Workerの旧HTML cache-first応答を検出し、v10・HTML network-first・バージョン付きPWAリンクへ修正、再QA待ち。 | `docs/qa/2026-08-19_sales_ready_qa_result.md`、D-015 |
