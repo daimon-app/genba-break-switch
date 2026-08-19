@@ -5,16 +5,16 @@
 | 項目 | 現在値 |
 | --- | --- |
 | Product | **切り替えスイッチ**（現行コード内表記: 「現場休憩スイッチ」） |
-| Current Stage | **Stage 5/6 完了 — 公開QA・販売監査・キャッシュ修正・再QA完了。最終正本更新と本人承認待ち。** |
+| Current Stage | **Stage 6/6 — GitHub正本・最終監査・QA・判定を確定。本人承認待ち。** |
 | Repository | [`daimon-app/genba-break-switch`](https://github.com/daimon-app/genba-break-switch) |
 | Branch | `main` |
 | HEAD at start | `daaf6170220880c36da612935ba9c2dce11089ab` |
 | GitHub Pages | `https://daimon-app.github.io/genba-break-switch/`（公開・HTTPS強制） |
 | Latest QA | 静的QA PASS、ローカル主要導線QA PASS、公開LP・PWA・FAQ・追加方法・規約・Privacy・販売案内・サポートの到達確認 PASS。旧Service Workerキャッシュ問題はv10で修正・公開再QA PASS。iOS／Android実機QAは未実施。詳細は `docs/qa/2026-08-19_sales_ready_qa_result.md`。 |
-| Latest Audit | [`docs/audits/2026-08-19_kirikae_switch_sales_audit.md`](docs/audits/2026-08-19_kirikae_switch_sales_audit.md) を作成。CONDITIONAL: 無料公開ベータは本人承認後にGO、有償販売はNO GO。 |
+| Latest Audit | [`docs/audits/2026-08-19_kirikae_switch_sales_audit.md`](docs/audits/2026-08-19_kirikae_switch_sales_audit.md) をcommit `ef4797a3d5c0fd2b5375a9bdacea10e2152e7186` としてpush済み。CONDITIONAL: 無料公開ベータは本人承認後にGO、有償販売はNO GO。 |
 | Blockers | 有償販売はGitHub Pagesでは開始不可。無料公開ベータの外部告知は本人承認待ち。iOS／Android実機QAは未実施。販売者情報、商取引可能な販売基盤、決済事業者、正式価格、返金ポリシーの本人確定が未了。OSバックグラウンド通知・OSアラームは現行未実装。 |
 | Approval Required | 商品名最終確定、販売形態・価格、販売者名・住所・連絡先、問い合わせ窓口、返金条件、公開・販売開始可否。 |
-| Next Action | 最終監査・QA・Decision Log・MASTERをcommit/pushする。本人は無料公開ベータの開始可否、正式商品名、SNS投稿文／投稿者／日時を承認する。実機QAを実施できる場合はAndroid ChromeとiPhone Safariで確認する。有償販売は別基盤・販売者情報・価格・返金・決済の確定後に再施工する。 |
+| Next Action | 本人は無料公開ベータの開始可否、正式商品名、SNS投稿文／投稿者／日時を承認する。実機QAを実施できる場合はAndroid ChromeとiPhone Safariで確認する。有償販売は別基盤・販売者情報・価格・返金・決済の確定後に再施工する。 |
 
 ## このリポジトリで作っているもの
 
@@ -51,7 +51,7 @@
 | 3 | 商品・価格・販売導線・差別化の仕様と意思決定 | 完了 |
 | 4 | LP・FAQ・規約・プライバシー・問い合わせ導線の施工 | 完了（commit `f1ed9e57fd35a2f26eeacbff03d215ccc9e34d61`・push済み） |
 | 5 | 実装QA、販売監査、修正、再QA | 完了（公開再QA PASS、実機QAは未実施） |
-| 6 | HEAD／監査／QA／判定の確定、GitHub正本更新、最終報告 | 次工程 |
+| 6 | HEAD／監査／QA／判定の確定、GitHub正本更新、最終報告 | 完了（本人承認待ち） |
 
 ## 更新履歴
 
@@ -62,3 +62,4 @@
 | 2026-08-19 | 3 | 商品価値、対象顧客、競合上の位置づけ、無料公開ベータ案、有償化条件、販売文言ガードレールを仕様化・pushした。 | `docs/sales/2026-08-19_product_and_go_to_market_spec.md`、commit `82eb228f4771f03f84970e830f5f8f90024d212d` |
 | 2026-08-19 | 4 | GitHub Pagesを有償商取引に使わない方針を記録し、無料公開ベータ向けLP、FAQ、追加方法、利用規約、Privacy、販売案内、公開フィードバック、SNS素材、PWA本体からの導線を施工した。静的QAとローカル主要導線QAをPASS。 | `start.html`、`faq.html`、`install.html`、`terms.html`、`privacy.html`、`commerce.html`、`support.html`、`docs/sales/`、`docs/qa/`、commit `f1ed9e57fd35a2f26eeacbff03d215ccc9e34d61` |
 | 2026-08-19 | 5 | 公開LP初回404はPagesビルド完了後に解消。公開PWAで既存Service Workerの旧HTML cache-first応答を検出し、v10・HTML network-first・バージョン付きPWAリンクへ修正。公開再QAで新名称・新導線、FAQ、追加方法、規約、Privacy、販売案内、サポートの到達を確認。未参照の旧Service Workerを削除。販売監査はCONDITIONAL。 | `docs/qa/2026-08-19_sales_ready_qa_result.md`、`docs/audits/2026-08-19_kirikae_switch_sales_audit.md`、D-015、D-016 |
+| 2026-08-19 | 6 | 最終監査・QA・Decision Logをcommit `ef4797a3d5c0fd2b5375a9bdacea10e2152e7186` としてGitHubへpushし、無料公開ベータCONDITIONAL／有償販売NO GOを確定。 | `docs/audits/2026-08-19_kirikae_switch_sales_audit.md`、`docs/qa/2026-08-19_sales_ready_qa_result.md` |
