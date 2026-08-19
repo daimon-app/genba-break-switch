@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="切り替えスイッチ無料公開ベータのよくある質問。通知、オフライン、端末内記録、ホーム画面追加、安全上の注意を説明します。">
+  <title>FAQ｜切り替えスイッチ</title>
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="start.html" aria-label="切り替えスイッチ ホーム">切り替えスイッチ<small>FREE PUBLIC BETA</small></a>
+      <nav class="nav" aria-label="主要ナビゲーション">
+        <a href="start.html">紹介</a>
+        <a href="faq.html" aria-current="page">FAQ</a>
+        <a href="install.html">追加方法</a>
+        <a href="support.html">サポート</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div class="eyebrow">FREQUENTLY ASKED QUESTIONS</div>
+        <h1>よくある質問</h1>
+        <p>現在の無料公開ベータでできること、できないことを、実装に沿って説明します。</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container prose faq">
+        <details open>
+          <summary>切り替えスイッチは何のためのアプリですか？</summary>
+          <p>休憩を始め、短いリセットを行い、休憩後に最初に着手する「次の一手」を一つだけ確認して作業へ戻るためのPWAです。作業指示、勤怠管理、安全管理のためのサービスではありません。</p>
+        </details>
+        <details>
+          <summary>料金はかかりますか？</summary>
+          <p>現在は無料公開ベータです。アプリ内課金、購入受付、サブスクリプション、決済はありません。</p>
+        </details>
+        <details>
+          <summary>30秒や1分のリセットでは、何ができますか？</summary>
+          <p>30秒、1分、3分、5分の短いリセットに加え、30秒と1分を含む瞑想・整えタイマーがあります。画面上のチェックリストや一言を見ながら、呼吸、肩、目、水分などを自分の判断で整えるための時間です。身体的・精神的な効果を保証するものではありません。</p>
+        </details>
+        <details>
+          <summary>アファメーション機能はありますか？</summary>
+          <p>利用者が自分の文章を保存・読み上げる専用のアファメーション機能は、現在のベータにはありません。各モードには「次の一手だけ見る」「肩の力を抜く」などの固定の再始動メッセージがあります。専用機能の要望はサポートページの公開フィードバックから送れます。</p>
+        </details>
+        <details>
+          <summary>時間になったら、必ず通知やアラームが鳴りますか？</summary>
+          <p>いいえ。現行PWAには、OSプッシュ通知、OSアラーム、バックグラウンドでの終了通知はありません。画面を開いている間のカウント表示と終了音を提供します。時間を確実に知る必要がある場合は、端末標準のタイマー／アラームを併用してください。</p>
+        </details>
+        <details>
+          <summary>画面を閉じたり、別のアプリに切り替えたりしても使えますか？</summary>
+          <p>画面に戻った際、タイマーは終了予定時刻から残り時間を再計算します。ただし、ブラウザやOSはバックグラウンドの処理・音声を制限することがあります。アプリを閉じている間や画面が非表示の間に、確実な終了通知・音声を行うものではありません。</p>
+        </details>
+        <details>
+          <summary>画面は消えませんか？</summary>
+          <p>対応端末では、タイマー中に画面消灯を抑制するよう試みます。しかし、端末設定、低電力状態、ブラウザ、画面の非表示化などにより利用できない、または途中で解除される場合があります。画面消灯を防ぐことを保証するものではありません。</p>
+        </details>
+        <details>
+          <summary>AndroidとiPhoneの両方で使えますか？</summary>
+          <p>モダンブラウザで使えるWebアプリです。Androidでは対応ブラウザのメニューから、iPhoneではSafariの共有メニューから、ホーム画面へ追加できる場合があります。表示・追加方法・対応機能は、端末、OS、ブラウザにより異なります。<a href="install.html">追加方法</a>をご覧ください。</p>
+        </details>
+        <details>
+          <summary>オフラインでも使えますか？</summary>
+          <p>初回読み込みと更新が完了した後の基本機能を、オフラインで開けるよう設計しています。初回利用時、更新直後、端末のストレージ削除後、ブラウザの制限時などは、通信が必要になる場合があります。完全なオフライン動作を保証するものではありません。</p>
+        </details>
+        <details>
+          <summary>記録や「次の一手」はどこに保存されますか？</summary>
+          <p>現行のPWA本体では、履歴、音設定、「次の一手」を、このブラウザ・この端末のローカルストレージに保存します。アカウント同期はありません。ブラウザデータの削除、端末変更、シークレットモード等により消える場合があります。詳しくは<a href="privacy.html">プライバシー</a>をご覧ください。</p>
+        </details>
+        <details>
+          <summary>暑い日モードは熱中症対策になりますか？</summary>
+          <p>暑い日モードは、固定の休憩時間と水分・日陰等の行動を表示するためのメニューです。暑さ指数、作業強度、服装、体調、現場状況を判定しません。熱中症の予防・診断・安全確保・法令遵守を保証するものではありません。現場の安全衛生ルール、責任者の指示、公式情報を優先してください。</p>
+        </details>
+        <details>
+          <summary>不具合や要望はどこに送れますか？</summary>
+          <p><a href="support.html">サポート</a>をご覧ください。現在の公開フィードバックはGitHub Issuesを利用します。内容は公開されるため、氏名、電話番号、住所、現場名、写真、顧客情報などの個人情報・機密情報は記載しないでください。</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <section><h2>切り替えスイッチ</h2><p>現場の休憩から、次の一手へ戻るための無料公開ベータPWA。</p></section>
+      <section><h2>使う</h2><ul><li><a href="index.html">アプリを開く</a></li><li><a href="install.html">ホーム画面への追加</a></li><li><a href="start.html">紹介へ戻る</a></li></ul></section>
+      <section><h2>ポリシー</h2><ul><li><a href="terms.html">利用規約</a></li><li><a href="privacy.html">プライバシー</a></li><li><a href="commerce.html">販売について</a></li><li><a href="support.html">サポート</a></li></ul></section>
+    </div>
+  </footer>
+</body>
+</html>

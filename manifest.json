@@ -1,7 +1,7 @@
 {
-  "name": "現場休憩スイッチ",
-  "short_name": "休憩スイッチ",
-  "description": "疲れる前に戻す。次の一手へ戻るための現場用休憩タイマー。",
+  "name": "切り替えスイッチ",
+  "short_name": "切り替え",
+  "description": "疲れる前に戻す。次の一手へ戻るための、現場向け休憩・リセットタイマー。",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

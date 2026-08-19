@@ -1,0 +1,47 @@
+{
+  "scope": "static QA only; browser and mobile device checks are recorded separately",
+  "overall": "PASS",
+  "failure_count": 0,
+  "results": [
+    {
+      "id": "Q-01",
+      "status": "PASS",
+      "detail": "All required HTML, CSS, manifest, and service-worker files exist."
+    },
+    {
+      "id": "Q-02",
+      "status": "PASS",
+      "detail": "title, Apple Web App title, manifest name, and manifest short_name are aligned."
+    },
+    {
+      "id": "Q-04",
+      "status": "PASS",
+      "detail": "All local links in public HTML pages resolve to existing files."
+    },
+    {
+      "id": "Q-03/Q-12",
+      "status": "PASS",
+      "detail": "Free-beta LP links to the app; no local form is present; commerce page states that paid sales are not active."
+    },
+    {
+      "id": "Q-05",
+      "status": "PASS",
+      "detail": "No prohibited implementation promises found; key limitations are displayed."
+    },
+    {
+      "id": "Q-06",
+      "status": "PASS",
+      "detail": "Service worker cache includes public pages and core assets; no unimplemented push API is claimed by code."
+    },
+    {
+      "id": "Q-07",
+      "status": "PASS",
+      "detail": "PWA home contains direct links to the LP and FAQ/safety guidance."
+    },
+    {
+      "id": "Q-04-Privacy",
+      "status": "PASS",
+      "detail": "Privacy page documents local storage, GitHub Pages, IP logging, and public Issues."
+    }
+  ]
+}

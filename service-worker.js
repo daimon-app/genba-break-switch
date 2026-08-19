@@ -1,10 +1,18 @@
 // DAIMON Service Worker
 // オフラインでも開けるようにキャッシュする
 
-const CACHE_NAME = 'daimon-v8';
+const CACHE_NAME = 'kirikae-v9';
 const ASSETS = [
   './',
   './index.html',
+  './start.html',
+  './faq.html',
+  './install.html',
+  './terms.html',
+  './privacy.html',
+  './commerce.html',
+  './support.html',
+  './site.css',
   './manifest.json',
   './assets/sounds/ocean-waves.mp3',
   './assets/sounds/river.mp3',

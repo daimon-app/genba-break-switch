@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>現場休憩スイッチ</title>
+<title>切り替えスイッチ</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#111111">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="現場休憩スイッチ">
+<meta name="apple-mobile-web-app-title" content="切り替えスイッチ">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@200;300;400&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -87,9 +87,9 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
 .genba-home-links{width:100%;max-width:400px;display:flex;flex-direction:column;gap:8px;}
 .genba-link-btn{
-  padding:14px;background:transparent;border:1px solid #333333;
+  display:block;padding:14px;background:transparent;border:1px solid #333333;
   color:#cccccc;font-family:'Noto Serif JP',serif;font-size:12px;
-  letter-spacing:2px;cursor:pointer;transition:all 0.2s;
+  letter-spacing:2px;cursor:pointer;transition:all 0.2s;text-decoration:none;text-align:center;
 }
 .genba-link-btn:hover{border-color:#D4AF37;color:#D4AF37;}
 .logo{font-family:'Playfair Display',serif;font-size:13px;letter-spacing:8px;color:var(--gold);text-transform:uppercase;opacity:0.7;margin-bottom:24px;}
@@ -418,10 +418,10 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 <div class="ambient"></div>
 <div id="app">
 
-<!-- ===== HOME (現場休憩スイッチ) ===== -->
+<!-- ===== HOME (切り替えスイッチ) ===== -->
 <div id="home" class="screen active genba">
   <div class="genba-home-header">
-    <div class="genba-home-title">現場休憩スイッチ</div>
+    <div class="genba-home-title">切り替えスイッチ</div>
     <div class="genba-home-sub">疲れる前に戻す。<br>次の一手へ。</div>
   </div>
 
@@ -452,6 +452,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   <div class="genba-home-links">
     <button class="genba-link-btn" onclick="renderHistory();showScreen('history')">記録</button>
     <button class="genba-link-btn" onclick="showScreen('meditation')">瞑想・整えタイマー</button>
+    <a class="genba-link-btn" href="start.html">使い方・無料公開ベータ</a>
+    <a class="genba-link-btn" href="faq.html">FAQ・安全上の注意</a>
   </div>
 </div>
 

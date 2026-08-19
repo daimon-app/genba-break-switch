@@ -5,16 +5,16 @@
 | 項目 | 現在値 |
 | --- | --- |
 | Product | **切り替えスイッチ**（現行コード内表記: 「現場休憩スイッチ」） |
-| Current Stage | **Stage 3/6 — 商品戦略・価格・販売導線・販売文言の仕様化中** |
+| Current Stage | **Stage 4/6 完了 — 無料公開ベータ向けLP・法務・サポート導線を施工済み。次は公開後QA・販売監査。** |
 | Repository | [`daimon-app/genba-break-switch`](https://github.com/daimon-app/genba-break-switch) |
 | Branch | `main` |
 | HEAD at start | `daaf6170220880c36da612935ba9c2dce11089ab` |
 | GitHub Pages | `https://daimon-app.github.io/genba-break-switch/`（公開・HTTPS強制） |
-| Latest QA | 未実施。`docs/qa/` に仕様・結果を作成予定。 |
-| Latest Audit | 初期実装・市場・プラットフォーム調査、販売表示・個人情報調査、商品・販売仕様を正本化済み。販売最終監査は未実施。 |
-| Blockers | 販売者情報、購入先・決済事業者、正式価格、返金ポリシーの本人確定が未了。OSバックグラウンド通知・OSアラームは現行未実装。 |
+| Latest QA | 静的QA PASS、ローカルLP・PWA主要導線・30秒リセット・瞑想30秒／1分の手動QA PASS。公開GitHub PagesとiOS／Android実機QAは未実施。詳細は `docs/qa/2026-08-19_sales_ready_qa_result.md`。 |
+| Latest Audit | 初期実装・市場・プラットフォーム調査、販売表示・個人情報調査、商品・販売仕様、GitHub Pages商取引制約、LP・法務・サポート施工を正本化済み。販売最終監査は未実施。 |
+| Blockers | 有償販売はGitHub Pagesでは開始不可。販売者情報、商取引可能な販売基盤、決済事業者、正式価格、返金ポリシーの本人確定が未了。OSバックグラウンド通知・OSアラームは現行未実装。 |
 | Approval Required | 商品名最終確定、販売形態・価格、販売者名・住所・連絡先、問い合わせ窓口、返金条件、公開・販売開始可否。 |
-| Next Action | 販売LP、FAQ、利用規約、プライバシー、問い合わせ・フィードバック導線を施工する。購入・決済は販売者情報、価格、返金条件、本人承認の確定まで有効化しない。 |
+| Next Action | LP・法務・サポート施工をコミット・pushし、公開GitHub Pagesで再QA、販売監査、必要修正、再QAを実施する。購入・決済は有効化しない。 |
 
 ## このリポジトリで作っているもの
 
@@ -30,8 +30,9 @@
 | GitHub正本ルール | [`docs/specs/2026-08-19_GITHUB_SOURCE_OF_TRUTH_MANDATORY_RULE.md`](docs/specs/2026-08-19_GITHUB_SOURCE_OF_TRUTH_MANDATORY_RULE.md) | 保存済み |
 | 市場・OS・競合調査 | [`docs/research/2026-08-19_market_platform_research.md`](docs/research/2026-08-19_market_platform_research.md) | 初回調査済み・追記予定 |
 | 販売表示・個人情報調査 | [`docs/research/2026-08-19_sales_legal_requirements_research.md`](docs/research/2026-08-19_sales_legal_requirements_research.md) | 初回調査済み |
-| 商品・販売仕様 | [`docs/sales/2026-08-19_product_and_go_to_market_spec.md`](docs/sales/2026-08-19_product_and_go_to_market_spec.md) | 施工案を保存済み・本人承認待ち |
-| QA仕様・結果 | `docs/qa/` | 未作成 |
+| 商品・販売仕様 | [`docs/sales/2026-08-19_product_and_go_to_market_spec.md`](docs/sales/2026-08-19_product_and_go_to_market_spec.md)、[`2026-08-19_sales_assets_implementation.md`](docs/sales/2026-08-19_sales_assets_implementation.md)、[`2026-08-19_sns_launch_kit.md`](docs/sales/2026-08-19_sns_launch_kit.md) | 施工済み・有償化は本人承認待ち |
+| QA仕様・結果 | [`docs/qa/2026-08-19_sales_ready_qa_spec.md`](docs/qa/2026-08-19_sales_ready_qa_spec.md)、[`2026-08-19_sales_ready_qa_result.md`](docs/qa/2026-08-19_sales_ready_qa_result.md) | ローカルQA済み・公開後／実機QA待ち |
+| GitHub Pages商取引制約 | [`docs/research/2026-08-19_github_pages_hosting_constraints.md`](docs/research/2026-08-19_github_pages_hosting_constraints.md) | 調査済み |
 | 販売監査 | `docs/audits/` | 未作成 |
 | Decision Log | [`docs/decisions/2026-08-19_sales_execution_decision_log.md`](docs/decisions/2026-08-19_sales_execution_decision_log.md) | 初期判断を保存済み・継続更新 |
 
@@ -47,9 +48,9 @@
 | --- | --- | --- |
 | 1 | GitHub正本確認、受領仕様書保存、MASTER作成 | 完了 |
 | 2 | 一次情報による市場・競合・プラットフォーム・表示要件調査 | 完了 |
-| 3 | 商品・価格・販売導線・差別化の仕様と意思決定 | 進行中 |
-| 4 | LP・FAQ・規約・プライバシー・問い合わせ導線の施工 | 未開始 |
-| 5 | 実装QA、販売監査、修正、再QA | 未開始 |
+| 3 | 商品・価格・販売導線・差別化の仕様と意思決定 | 完了 |
+| 4 | LP・FAQ・規約・プライバシー・問い合わせ導線の施工 | 完了（commit前） |
+| 5 | 実装QA、販売監査、修正、再QA | 次工程 |
 | 6 | HEAD／監査／QA／判定の確定、GitHub正本更新、最終報告 | 未開始 |
 
 ## 更新履歴
@@ -58,4 +59,5 @@
 | --- | --- | --- | --- |
 | 2026-08-19 | 1 | GitHub正本を確認し、施工仕様書、正本運用ルール、初回調査、MASTERを作成・pushした。 | `docs/specs/`、`docs/research/`、commit `89e2bed3f3adc95d2c11160dea9a42a6a59050dd` |
 | 2026-08-19 | 2 | 公開PWAの初期画面、OS／PWA制約、競合、販売表示・個人情報の一次情報調査を完了・pushした。 | `docs/research/`、commit `82f69c861f5483e559053b4841298f3236e34018` |
-| 2026-08-19 | 3 | 商品価値、対象顧客、競合上の位置づけ、無料公開ベータ案、有償化条件、販売文言ガードレールを仕様化した。 | `docs/sales/2026-08-19_product_and_go_to_market_spec.md` |
+| 2026-08-19 | 3 | 商品価値、対象顧客、競合上の位置づけ、無料公開ベータ案、有償化条件、販売文言ガードレールを仕様化・pushした。 | `docs/sales/2026-08-19_product_and_go_to_market_spec.md`、commit `82eb228f4771f03f84970e830f5f8f90024d212d` |
+| 2026-08-19 | 4 | GitHub Pagesを有償商取引に使わない方針を記録し、無料公開ベータ向けLP、FAQ、追加方法、利用規約、Privacy、販売案内、公開フィードバック、SNS素材、PWA本体からの導線を施工した。静的QAとローカル主要導線QAをPASS。 | `start.html`、`faq.html`、`install.html`、`terms.html`、`privacy.html`、`commerce.html`、`support.html`、`docs/sales/`、`docs/qa/` |

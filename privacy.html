@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="切り替えスイッチ無料公開ベータのプライバシー案内。端末内記録、GitHub Pages、公開フィードバックの取扱いを説明します。">
+  <title>プライバシー｜切り替えスイッチ</title>
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="start.html" aria-label="切り替えスイッチ ホーム">切り替えスイッチ<small>FREE PUBLIC BETA</small></a>
+      <nav class="nav" aria-label="主要ナビゲーション">
+        <a href="start.html">紹介</a>
+        <a href="faq.html">FAQ</a>
+        <a href="install.html">追加方法</a>
+        <a href="support.html">サポート</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <div class="eyebrow">PRIVACY</div>
+        <h1>プライバシー</h1>
+        <p>現行の無料公開ベータで、何が端末内に保存され、どの外部サービスを利用しているかを説明します。</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container prose">
+        <p class="meta">最終更新日: 2026年8月19日</p>
+        <div class="signal">
+          <strong>要約</strong>
+          <p>現行PWA本体は、アカウント作成、広告SDK、行動分析SDK、位置情報取得、連絡先取得、決済機能を実装していません。休憩履歴などは、原則として利用者のブラウザ・端末内に保存されます。ただし、このサイトはGitHub Pagesで公開され、訪問時にはGitHubがセキュリティ目的でIPアドレスを記録・保存します。</p>
+        </div>
+
+        <h2>1. 適用範囲</h2>
+        <p>このページは、切り替えスイッチの無料公開ベータPWA、紹介ページ、FAQ、サポート案内に適用します。外部リンク先のサービスには、それぞれのプライバシーポリシーが適用されます。</p>
+
+        <h2>2. PWA本体が端末内に保存する情報</h2>
+        <table>
+          <thead><tr><th>情報</th><th>目的</th><th>保存場所</th><th>サーバー送信</th></tr></thead>
+          <tbody>
+            <tr><td>休憩・瞑想・睡眠等の利用履歴</td><td>記録画面と簡易集計の表示</td><td>利用中のブラウザのローカルストレージ</td><td>現行実装では行いません</td></tr>
+            <tr><td>音の種類・カウント音の設定</td><td>次回利用時に設定を引き継ぐ</td><td>利用中のブラウザのローカルストレージ</td><td>現行実装では行いません</td></tr>
+            <tr><td>「次の一手」の入力文</td><td>休憩終盤・完了時に再表示する</td><td>利用中のブラウザのローカルストレージ</td><td>現行実装では行いません</td></tr>
+          </tbody>
+        </table>
+        <p>これらの情報は、端末変更、ブラウザデータの削除、ブラウザの初期化、シークレットモード、ストレージ制限等で消える場合があります。利用者自身でアプリ内の記録削除を行えます。なお、入力欄に個人情報、顧客情報、現場の機密情報を入れないでください。</p>
+
+        <h2>3. GitHub Pagesによる公開</h2>
+        <p>本サイトはGitHub Pagesを利用して公開しています。GitHubの公式説明によれば、GitHub Pagesサイトへの訪問時、GitHubはセキュリティ目的で訪問者のIPアドレスを記録・保存します。GitHubによる情報の取扱いは、<a href="https://docs.github.com/site-policy/privacy-policies/github-privacy-statement" rel="noopener">GitHub Privacy Statement</a>をご確認ください。</p>
+        <p>本サービス運営者は、現行ページに独自のアクセス解析SDK、広告SDK、リターゲティングピクセルを追加していません。将来これらを追加する場合は、目的・取得情報・外部送信先を明記して本ページを更新します。</p>
+
+        <h2>4. 公開フィードバック</h2>
+        <p>不具合・要望の公開フィードバックにはGitHub Issuesを利用します。GitHub Issuesに投稿した内容、投稿者名、GitHubアカウント情報等は公開される場合があります。氏名、住所、電話番号、メールアドレス、現場名、顧客情報、写真、位置情報、その他の個人情報・機密情報を投稿しないでください。</p>
+
+        <h2>5. 現時点で行わないこと</h2>
+        <ul>
+          <li>アカウント登録・ログイン機能の提供</li>
+          <li>PWA本体からの利用履歴・次の一手のサーバー送信</li>
+          <li>位置情報、連絡先、カメラ、マイクの取得</li>
+          <li>広告配信、広告SDK、行動分析SDKの導入</li>
+          <li>カード決済情報等の取得・処理</li>
+        </ul>
+
+        <h2>6. 将来の変更</h2>
+        <p>問い合わせフォーム、メール配信、アクセス解析、外部決済、アカウント同期、チーム機能等を追加する場合、取得する情報、利用目的、保存先、外部委託先、利用者の選択肢、問い合わせ窓口を実態に合わせて本ページに追記し、販売・公開前に再監査します。</p>
+
+        <h2>7. お問い合わせ</h2>
+        <p>現在の公開フィードバックは<a href="support.html">サポートページ</a>をご覧ください。個別の個人情報保護に関する問い合わせ窓口は、販売者情報と正式な連絡先の確定後に設置します。</p>
+
+        <h2>8. 改定</h2>
+        <p>本ページは、機能・外部サービス・販売形態の変更に合わせて改定される場合があります。重要な変更は、合理的な方法で案内するよう努めます。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <section><h2>切り替えスイッチ</h2><p>現場の休憩から、次の一手へ戻るための無料公開ベータPWA。</p></section>
+      <section><h2>使う</h2><ul><li><a href="index.html">アプリを開く</a></li><li><a href="faq.html">よくある質問</a></li><li><a href="start.html">紹介へ戻る</a></li></ul></section>
+      <section><h2>ポリシー</h2><ul><li><a href="terms.html">利用規約</a></li><li><a href="commerce.html">販売について</a></li><li><a href="support.html">サポート</a></li></ul></section>
+    </div>
+  </footer>
+</body>
+</html>
