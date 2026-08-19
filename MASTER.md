@@ -5,16 +5,16 @@
 | 項目 | 現在値 |
 | --- | --- |
 | Product | **切り替えスイッチ**（現行コード内表記: 「現場休憩スイッチ」） |
-| Current Stage | **Stage 1/6 — 正本化完了、一次調査を継続中** |
+| Current Stage | **Stage 2/6 — 一次情報によるプラットフォーム・市場・競合・表示要件の検証中** |
 | Repository | [`daimon-app/genba-break-switch`](https://github.com/daimon-app/genba-break-switch) |
 | Branch | `main` |
 | HEAD at start | `daaf6170220880c36da612935ba9c2dce11089ab` |
 | GitHub Pages | `https://daimon-app.github.io/genba-break-switch/`（公開・HTTPS強制） |
 | Latest QA | 未実施。`docs/qa/` に仕様・結果を作成予定。 |
-| Latest Audit | 初期実装調査を `docs/research/2026-08-19_market_platform_research.md` に保存済み。販売最終監査は未実施。 |
+| Latest Audit | 初期実装・市場・プラットフォーム調査を `docs/research/2026-08-19_market_platform_research.md`、販売表示・個人情報調査を `docs/research/2026-08-19_sales_legal_requirements_research.md` に保存済み。販売最終監査は未実施。 |
 | Blockers | 販売者情報、購入先・決済事業者、正式価格、返金ポリシーの本人確定が未了。OSバックグラウンド通知・OSアラームは現行未実装。 |
 | Approval Required | 商品名最終確定、販売形態・価格、販売者名・住所・連絡先、問い合わせ窓口、返金条件、公開・販売開始可否。 |
-| Next Action | 一次情報でのプラットフォーム・競合・法的表示調査を完了し、商品・販売仕様とDecision Logへ反映する。 |
+| Next Action | 一次情報でのプラットフォーム・競合・法的表示調査を完了し、商品・販売仕様とDecision Logへ反映する。販売者情報・決済・返金条件は本人承認待ちとして分離する。 |
 
 ## このリポジトリで作っているもの
 
@@ -29,10 +29,11 @@
 | 受領施工仕様書 | [`docs/specs/2026-08-19_M05_SALES_READY_EXECUTION_SPEC.md`](docs/specs/2026-08-19_M05_SALES_READY_EXECUTION_SPEC.md) | 保存済み |
 | GitHub正本ルール | [`docs/specs/2026-08-19_GITHUB_SOURCE_OF_TRUTH_MANDATORY_RULE.md`](docs/specs/2026-08-19_GITHUB_SOURCE_OF_TRUTH_MANDATORY_RULE.md) | 保存済み |
 | 市場・OS・競合調査 | [`docs/research/2026-08-19_market_platform_research.md`](docs/research/2026-08-19_market_platform_research.md) | 初回調査済み・追記予定 |
+| 販売表示・個人情報調査 | [`docs/research/2026-08-19_sales_legal_requirements_research.md`](docs/research/2026-08-19_sales_legal_requirements_research.md) | 初回調査済み |
 | 商品・販売仕様 | `docs/sales/` | 未作成 |
 | QA仕様・結果 | `docs/qa/` | 未作成 |
 | 販売監査 | `docs/audits/` | 未作成 |
-| Decision Log | `docs/decisions/` | 未作成 |
+| Decision Log | [`docs/decisions/2026-08-19_sales_execution_decision_log.md`](docs/decisions/2026-08-19_sales_execution_decision_log.md) | 初期判断を保存済み・継続更新 |
 
 ## 正本運用規則
 
@@ -44,8 +45,8 @@
 
 | Stage | 成果物 | 判定 |
 | --- | --- | --- |
-| 1 | GitHub正本確認、受領仕様書保存、MASTER作成 | 進行中 |
-| 2 | 一次情報による市場・競合・プラットフォーム・表示要件調査 | 未完了 |
+| 1 | GitHub正本確認、受領仕様書保存、MASTER作成 | 完了 |
+| 2 | 一次情報による市場・競合・プラットフォーム・表示要件調査 | 進行中 |
 | 3 | 商品・価格・販売導線・差別化の仕様と意思決定 | 未開始 |
 | 4 | LP・FAQ・規約・プライバシー・問い合わせ導線の施工 | 未開始 |
 | 5 | 実装QA、販売監査、修正、再QA | 未開始 |
@@ -55,4 +56,5 @@
 
 | 日付 | Stage | 変更 | 証拠 |
 | --- | --- | --- | --- |
-| 2026-08-19 | 1 | GitHub正本を確認し、施工仕様書、正本運用ルール、初回調査、MASTERを作成した。 | `docs/specs/`、`docs/research/`、Git履歴（コミット予定） |
+| 2026-08-19 | 1 | GitHub正本を確認し、施工仕様書、正本運用ルール、初回調査、MASTERを作成・pushした。 | `docs/specs/`、`docs/research/`、commit `89e2bed3f3adc95d2c11160dea9a42a6a59050dd` |
+| 2026-08-19 | 2 | 公開PWAの初期画面、OS／PWA制約、競合、販売表示・個人情報の一次情報調査を開始した。 | `docs/research/` |
