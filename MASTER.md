@@ -4,17 +4,17 @@
 
 | 項目 | 現在値 |
 | --- | --- |
-| Product | **切り替えスイッチ**（現行コード内表記: 「現場休憩スイッチ」） |
-| Current Stage | **Stage 6/6 — GitHub正本・最終監査・QA・判定を確定。本人承認待ち。** |
+| Product | **切り替えスイッチ** |
+| Current Stage | **CONDITIONAL READY FOR USER APPROVAL — FREE BETA**（Claude独立監査は接続復旧後に実施） |
 | Repository | [`daimon-app/genba-break-switch`](https://github.com/daimon-app/genba-break-switch) |
 | Branch | `main` |
 | HEAD at start | `daaf6170220880c36da612935ba9c2dce11089ab` |
 | GitHub Pages | `https://daimon-app.github.io/genba-break-switch/`（公開・HTTPS強制） |
-| Latest QA | 静的QA PASS、ローカル主要導線QA PASS、公開LP・PWA・FAQ・追加方法・規約・Privacy・販売案内・サポートの到達確認 PASS。旧Service Workerキャッシュ問題はv10で修正・公開再QA PASS。iOS／Android実機QAは未実施。詳細は `docs/qa/2026-08-19_sales_ready_qa_result.md`。 |
-| Latest Audit | [`docs/audits/2026-08-19_kirikae_switch_sales_audit.md`](docs/audits/2026-08-19_kirikae_switch_sales_audit.md) をcommit `ef4797a3d5c0fd2b5375a9bdacea10e2152e7186` としてpush済み。CONDITIONAL: 無料公開ベータは本人承認後にGO、有償販売はNO GO。 |
-| Blockers | 有償販売はGitHub Pagesでは開始不可。無料公開ベータの外部告知は本人承認待ち。iOS／Android実機QAは未実施。販売者情報、商取引可能な販売基盤、決済事業者、正式価格、返金ポリシーの本人確定が未了。OSバックグラウンド通知・OSアラームは現行未実装。 |
-| Approval Required | 商品名最終確定、販売形態・価格、販売者名・住所・連絡先、問い合わせ窓口、返金条件、公開・販売開始可否。 |
-| Next Action | 本人は無料公開ベータの開始可否、正式商品名、SNS投稿文／投稿者／日時を承認する。実機QAを実施できる場合はAndroid ChromeとiPhone Safariで確認する。有償販売は別基盤・販売者情報・価格・返金・決済の確定後に再施工する。 |
+| Latest QA | 2026-08-20に最新HEADで静的QAを再実行しPASS。ローカル主要導線QAと既存公開Browser QAもPASS。旧Service Workerキャッシュ問題はv10で修正済み。iOS／Android実機QAは `UNVERIFIED` で、実行パッケージを `docs/qa/2026-08-20_mobile_device_qa_package.md` に保存。 |
+| Latest Audit | Manus監査 [`docs/audits/2026-08-19_kirikae_switch_sales_audit.md`](docs/audits/2026-08-19_kirikae_switch_sales_audit.md) はCONDITIONAL（無料βは本人承認後GO、有償販売NO GO）。Claude Code CLIは2026-08-20に2回timeoutし、独立監査は `PENDING / UNVERIFIED`。 |
+| Blockers | Claude独立監査はCLI timeoutで `PENDING`。無料公開ベータの外部告知とSNS実投稿は本人承認待ち。iOS／Android実機QAは `UNVERIFIED`。有償販売はGitHub Pagesでは開始不可で、販売者情報・販売基盤・決済・正式価格・返金条件が未確定。OSバックグラウンド通知・OSアラームは提供しない。 |
+| Approval Required | 無料公開ベータ開始、SNS投稿文／投稿者／日時、実機QAセッション。有償化は別Gateとして価格・販売者情報・決済・返金条件・販売開始承認が必要。 |
+| Next Action | 無料β開始承認後にAndroid Chrome／iPhone Safariの一括実機QAとβ告知を実行する。承認待ちの間は一手箱へFOCUSを移す。 |
 
 ## このリポジトリで作っているもの
 
@@ -64,3 +64,4 @@
 | 2026-08-19 | 5 | 公開LP初回404はPagesビルド完了後に解消。公開PWAで既存Service Workerの旧HTML cache-first応答を検出し、v10・HTML network-first・バージョン付きPWAリンクへ修正。公開再QAで新名称・新導線、FAQ、追加方法、規約、Privacy、販売案内、サポートの到達を確認。未参照の旧Service Workerを削除。販売監査はCONDITIONAL。 | `docs/qa/2026-08-19_sales_ready_qa_result.md`、`docs/audits/2026-08-19_kirikae_switch_sales_audit.md`、D-015、D-016 |
 | 2026-08-19 | 6 | 最終監査・QA・Decision Logをcommit `ef4797a3d5c0fd2b5375a9bdacea10e2152e7186` としてGitHubへpushし、無料公開ベータCONDITIONAL／有償販売NO GOを確定。 | `docs/audits/2026-08-19_kirikae_switch_sales_audit.md`、`docs/qa/2026-08-19_sales_ready_qa_result.md` |
 | 2026-08-19 | 6 | 指定形式のKIRIKAE SWITCH SALES REPORTをcommit `1cec1a4d94655e04175ee0fe3d091a9d15c45646` としてGitHubへpush。 | `docs/sales/2026-08-19_KIRIKAE_SWITCH_SALES_REPORT.md` |
+| 2026-08-20 | Gate | 最新remote `main`（`ff87739`）へ同期し、静的QAを再実行してPASS。実機QA手順と6/15/30秒CM制作パッケージを追加。実機結果とClaude独立監査は未完了のため `UNVERIFIED / PENDING` を維持し、無料βを `CONDITIONAL READY FOR USER APPROVAL` と判定。 | `docs/qa/2026-08-20_mobile_device_qa_package.md`、`docs/sales/2026-08-20_cm_production_package.md` |
